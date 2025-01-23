@@ -1,9 +1,8 @@
 services:
   netbox: &netbox
-    image: docker.io/netboxcommunity/netbox:${VERSION-v4.1-3.0.2}
+    image: docker.io/netboxcommunity/nextbox:${VERSION-v4.1-3.0.2}
     build:
-      context: .
-      dockerfile: ./nextbox-ui-plugin
+      context: ./nextbox-ui-plugin
     depends_on:
       - postgres
       - redis
