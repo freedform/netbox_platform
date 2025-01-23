@@ -75,7 +75,7 @@ class NodeStatusPoller {
                 console.log(data)
                 const node = window.topoSphere.topology.getNode(nameToIdMap[name]);
                 if (node) {
-                    node.setStatus(data.status);
+                    node.setStatus(data);
                 }
             } catch (error) {
                 console.error(`Error updating status for node ${id}:`, error);
