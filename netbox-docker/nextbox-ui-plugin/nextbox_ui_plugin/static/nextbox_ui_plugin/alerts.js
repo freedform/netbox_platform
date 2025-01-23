@@ -46,7 +46,7 @@ class NodeStatusPoller {
             nodeIds.forEach(nodeId => {
                 const node = window.topoSphere.topology.getNode(nodeId);
                 nodeNames.push(node.customAttributes.name);
-                nameToIdMap[nodeId] = node.customAttributes.name;
+                nameToIdMap[node.customAttributes.name] = nodeId;
             })
             const filterParam = nodeNames.join(',');
             console.log(filterParam)
