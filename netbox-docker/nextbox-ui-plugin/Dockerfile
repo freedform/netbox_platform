@@ -10,4 +10,4 @@ COPY ./setup.py /source/nextbox-ui-plugin/
 COPY ./MANIFEST.in /source/nextbox-ui-plugin/
 COPY ./README.md /source/nextbox-ui-plugin/
 RUN cd /source/nextbox-ui-plugin \
-    $$ pip install .
+    && pip install .
