@@ -47,7 +47,7 @@ class NodeStatusPoller {
                 nameToIdMap[nodeId] = node.customAttributes.name;
             })
             const filterParam = nodeNames.join(',');
-            const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`);
+            const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`, { mode: 'no-cors'});
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
