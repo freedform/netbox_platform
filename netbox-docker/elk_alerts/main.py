@@ -12,7 +12,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         device_filter = query_components.get("filter", [])
         result = {
             "core_sw_1": "ok",
-            "core_sw_2": "error",
+            "core_sw_2": "ok",
             "dist_sw_1": "ok",
             "dist_sw_2": "warning",
             "edge_ro_1": "ok",
