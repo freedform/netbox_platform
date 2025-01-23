@@ -490,6 +490,7 @@ class TopologyView(PermissionRequiredMixin, View):
             ),
             'model': Device,
             'requestGET': dict(request.GET),
+            'device_status_url': PLUGIN_SETTINGS.get('device_status_url', ""),
         })
 
 class SiteTopologyView(TopologyView):

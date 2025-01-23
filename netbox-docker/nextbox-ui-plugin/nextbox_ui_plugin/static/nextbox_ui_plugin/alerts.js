@@ -55,8 +55,6 @@ class NodeStatusPoller {
             }
 
             let responseJson = await response.json();
-            console.log(responseJson)
-            console.log(nameToIdMap)
             return {nameToId: nameToIdMap, statusData: responseJson};
         } catch (error) {
             console.error('Error fetching node statuses:', error);
@@ -70,9 +68,6 @@ class NodeStatusPoller {
         const statusData = data.statusData;
         Object.entries(statusData).forEach(([name, data]) => {
             try {
-                console.log("marker 777")
-                console.log(name, nameToIdMap[name])
-                console.log(data)
                 const node = window.topoSphere.topology.getNode(nameToIdMap[name]);
                 if (node) {
                     node.setStatus(data);
@@ -106,7 +101,7 @@ class NodeStatusPoller {
 
 
 // const poller = new NodeStatusPoller(window.deviceStatusUrl);
-const poller = new NodeStatusPoller("http://192.168.1.253:8888");
+const poller = new NodeStatusPoller(window.deviceStatusUrl);
 
 
 // Start polling

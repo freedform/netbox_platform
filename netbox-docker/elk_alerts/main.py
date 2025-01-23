@@ -10,6 +10,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         query_components = parse_qs(urlparse(self.path).query)
         device_filter = query_components.get("filter", [])
+
         result = {
             "core_sw_1": "ok",
             "core_sw_2": "error",

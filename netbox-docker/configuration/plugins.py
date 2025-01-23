@@ -6,8 +6,8 @@
 
 PLUGINS = ["nextbox_ui_plugin"]
 
-# PLUGINS_CONFIG = {
-#   "netbox_bgp": {
-#     ADD YOUR SETTINGS HERE
-#   }
-# }
+PLUGINS_CONFIG = {
+  "nextbox_ui_plugin": {
+    "device_status_url": "http://192.168.1.253:8888"
+  }
+}
