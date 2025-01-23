@@ -39,6 +39,8 @@ class NodeStatusPoller {
     // Fetch status for nodes
     async fetchNodeStatuses(nodeIds) {
         try {
+            console.log("start status check")
+            console.log(nodeIds)
             let nodeNames = [];
             let nameToIdMap = {};
             nodeIds.forEach(nodeId => {
@@ -47,6 +49,7 @@ class NodeStatusPoller {
                 nameToIdMap[nodeId] = node.customAttributes.name;
             })
             const filterParam = nodeNames.join(',');
+            console.log(filterParam)
             const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`);
 
             if (!response.ok) {
