@@ -13,7 +13,8 @@
 <script type="text/javascript">
     window.initialLayout = '{{ initial_layout|default:"layered" }}';
     window.topologyData = {{ source_data|safe }};
-    window.netbox_csrf_token = '{{ csrf_token }}'
+    window.netbox_csrf_token = '{{ csrf_token }}';
+    window.deviceStatusUrl = '{{ device_status_url }}';
 </script>
 
 <script src="{% static 'nextbox_ui_plugin/topoSphere/topoSphere.js' %}"></script>

@@ -8,6 +8,6 @@ PLUGINS = ["nextbox_ui_plugin"]
 
 PLUGINS_CONFIG = {
   "nextbox_ui_plugin": {
-    "device_status_url": "http://192.168.1.253:8888"
+    "device_status_url": "http://netbox.local:8888"
   }
 }
