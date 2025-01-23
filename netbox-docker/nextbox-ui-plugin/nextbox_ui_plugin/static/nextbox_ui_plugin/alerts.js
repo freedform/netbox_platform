@@ -39,7 +39,7 @@ class NodeStatusPoller {
     // Fetch status for nodes
     async fetchNodeStatuses(nodeIds) {
         try {
-            let result = {};
+            console.log("start status check")
             let nodeNames = [];
             let nameToIdMap = {};
             nodeIds.forEach(nodeId => {
@@ -55,10 +55,9 @@ class NodeStatusPoller {
             }
 
             let responseJson = await response.json();
-            responseJson.forEach((nodeName, deviceStatus) => {
-                result[nameToIdMap[nodeName]] = deviceStatus
-            })
-            return result;
+            console.log(responseJson)
+            console.log(nameToIdMap)
+            return {nameToId: nameToIdMap, statusData: responseJson};
         } catch (error) {
             console.error('Error fetching node statuses:', error);
             return {};
@@ -67,11 +66,19 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateNodeStatuses(data) {
-        data.forEach((nodeId, nodeStatus) => {
+        const nameToIdMap = data.nameToId;
+        const statusData = data.statusData;
+        Object.entries(statusData).forEach(([name, data]) => {
             try {
-                window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus);
+                console.log("marker 777")
+                console.log(name, nameToIdMap[name])
+                console.log(data.status)
+                const node = window.topoSphere.topology.getNode(nameToIdMap[name]);
+                if (node) {
+                    node.setStatus(data.status);
+                }
             } catch (error) {
-                console.error(`Error updating status for node ${nodeId}:`, error);
+                console.error(`Error updating status for node ${id}:`, error);
             }
         });
     }
