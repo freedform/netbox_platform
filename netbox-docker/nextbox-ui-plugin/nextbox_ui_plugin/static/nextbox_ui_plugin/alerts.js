@@ -39,8 +39,7 @@ class NodeStatusPoller {
     // Fetch status for nodes
     async fetchNodeStatuses(nodeIds) {
         try {
-            console.log("start status check")
-            console.log(nodeIds)
+            let result = {};
             let nodeNames = [];
             let nameToIdMap = {};
             nodeIds.forEach(nodeId => {
@@ -49,7 +48,6 @@ class NodeStatusPoller {
                 nameToIdMap[node.customAttributes.name] = nodeId;
             })
             const filterParam = nodeNames.join(',');
-            console.log(filterParam)
             const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`);
 
             if (!response.ok) {
@@ -57,9 +55,10 @@ class NodeStatusPoller {
             }
 
             let responseJson = await response.json();
-            console.log(responseJson)
-            console.log(nameToIdMap)
-            return {nameToId: nameToIdMap, statusData: responseJson};
+            responseJson.forEach((nodeName, deviceStatus) => {
+                result[nameToIdMap[nodeName]] = deviceStatus
+            })
+            return result;
         } catch (error) {
             console.error('Error fetching node statuses:', error);
             return {};
@@ -68,16 +67,11 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateNodeStatuses(data) {
-        const nameToIdMap = data.nameToId;
-        const statusData = data.statusData;
-        Object.entries(statusData).forEach(([name, data]) => {
+        data.forEach((nodeId, nodeStatus) => {
             try {
-                const node = window.topoSphere.topology.getNode(nameToIdMap[name]);
-                if (node) {
-                    node.setStatus(data.status);
-                }
+                window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus);
             } catch (error) {
-                console.error(`Error updating status for node ${id}:`, error);
+                console.error(`Error updating status for node ${nodeId}:`, error);
             }
         });
     }
