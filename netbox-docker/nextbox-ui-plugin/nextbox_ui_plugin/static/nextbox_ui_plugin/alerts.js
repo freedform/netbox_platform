@@ -72,7 +72,7 @@ class NodeStatusPoller {
             try {
                 console.log("marker 777")
                 console.log(name, nameToIdMap[name])
-                console.log(data.status)
+                console.log(data)
                 const node = window.topoSphere.topology.getNode(nameToIdMap[name]);
                 if (node) {
                     node.setStatus(data.status);
