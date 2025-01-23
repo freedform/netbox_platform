@@ -17,8 +17,6 @@ services:
       - netbox-media-files:/opt/netbox/netbox/media:rw
       - netbox-reports-files:/opt/netbox/netbox/reports:rw
       - netbox-scripts-files:/opt/netbox/netbox/scripts:rw
-    ports:
-      - 8000:8080
   netbox-worker:
     <<: *netbox
     depends_on:
