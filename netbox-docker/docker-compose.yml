@@ -83,7 +83,13 @@ services:
     env_file: env/redis-cache.env
     volumes:
       - netbox-redis-cache-data:/data
-
+  elk_alerts:
+    image: python:3.12.8
+    volumes:
+      - ./elk_alerts:/opt
+    command: python /opt/main.py
+    ports:
+      - 8888:8888
 volumes:
   netbox-media-files:
     driver: local
