@@ -23,7 +23,7 @@ class NodeStatusPoller {
         }
     }
 
-    // Get list of node IDs from topology
+    // Get topology Nodes
     getNodeIds() {
         let result = {};
         //Topology is unavailable
@@ -39,6 +39,27 @@ class NodeStatusPoller {
             result[item.customAttributes.name] = item.id;
         })
         // returning { "node_name": "node_id" }
+        return result;
+    }
+
+    // Get topology Edges
+    getEdges() {
+        let result = [];
+        //Topology is unavailable
+        if (!window.topoSphere?.topology) {
+            console.error('Topology not available');
+            return result;
+        }
+        // Topology is empty
+        if (!window.topoSphere.topology.nodes) {
+            return result;
+        }
+        window.topoSphere.topology.edges.forEach(item => {
+            result.push({
+                A: {device: item.sourceNode.id, inteface: item.sourceNodeInterface},
+                B: {device: item.targetNode.id, inteface: item.targetNodeInterface},
+            })
+        })
         return result;
     }
 
@@ -66,13 +87,13 @@ class NodeStatusPoller {
     }
 
     // Update node statuses in topology
-    updateNodeStatuses(topologyNodes, nodeAlerts) {
+    updateTopologyStatus(topologyNodes, topologyEdges, topologyAlerts) {
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
                 // Set default value for node status
                 let nodeStatus = "ok"
-                if (nodeAlerts.hasOwnProperty(nodeId)) {
-                    nodeStatus = nodeAlerts[nodeId]['status']
+                if (topologyAlerts.hasOwnProperty(nodeId)) {
+                    nodeStatus = topologyAlerts[nodeId]['status']
                 }
                 // Update node status
                 window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
@@ -80,6 +101,12 @@ class NodeStatusPoller {
                 console.error(`Error updating status for node ${nodeName}:`, error);
             }
         });
+
+        topologyEdges.forEach(topologyEdge => {
+            console.log(topologyEdge)
+        })
+
+
     }
 
     // Main polling function
@@ -87,10 +114,11 @@ class NodeStatusPoller {
         if (!this.isPolling) return;
 
         try {
-            const nodeIds = this.getNodeIds();
-            if (Object.entries(nodeIds).length > 0) {
-                const statusData = await this.fetchNodeStatuses(nodeIds);
-                this.updateNodeStatuses(nodeIds, statusData);
+            const nodeList = this.getNodeIds();
+            const edgeList = this.getEdges();
+            if (Object.entries(nodeList).length > 0) {
+                const statusData = await this.fetchNodeStatuses(nodeList);
+                this.updateTopologyStatus(nodeList, edgeList, statusData);
             }
         } catch (error) {
             console.error('Error during polling:', error);

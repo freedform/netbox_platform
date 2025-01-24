@@ -9,6 +9,6 @@ PLUGINS = ["nextbox_ui_plugin"]
 PLUGINS_CONFIG = {
   "nextbox_ui_plugin": {
     "device_status_url": "http://netbox.local:8888",
-    "alerts_polling_interval": 10000
+    "alerts_polling_interval": 5000
   }
 }
