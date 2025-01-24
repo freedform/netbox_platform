@@ -103,10 +103,20 @@ class NodeStatusPoller {
         });
 
         topologyEdges.forEach(topologyEdge => {
-            console.log(topologyEdge)
+            aDevice = topologyEdge['A']['device']
+            bDevice = topologyEdge['B']['device']
+            aInterface = topologyEdge['A']['inteface']
+            bInterface = topologyEdge['B']['inteface']
+            
+            if (topologyAlerts.hasOwnProperty(aDevice) && topologyAlerts[aDevice].hasOwnProperty(aInterface)) {
+                edgeStatus = topologyAlerts[aDevice][aInterface]
+            } else if (topologyAlerts.hasOwnProperty(bDevice) && topologyAlerts[bDevice].hasOwnProperty(bInterface)) {
+                edgeStatus = topologyAlerts[bDevice][bInterface]
+            } else {
+                edgeStatus = "ok"
+            }
+            window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge.setStatus(edgeStatus)
         })
-
-
     }
 
     // Main polling function

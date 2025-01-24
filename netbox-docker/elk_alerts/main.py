@@ -17,7 +17,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         result = {
             "core_sw_1": {
                 "status": "error",
-                "interfaces": {},
+                "interfaces": {
+                    "g0/3": "warning"
+                },
             },
             "dist_sw_1": {
                 "status": "warning",
