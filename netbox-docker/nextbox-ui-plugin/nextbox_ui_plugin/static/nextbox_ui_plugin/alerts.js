@@ -72,8 +72,8 @@ class NodeStatusPoller {
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
                 let nodeStatus = "ok"
-                if (nodeId in Object.keys(nodeAlerts)) {
-                    console.log(nodeId, nodeName, nodeAlerts[nodeId])
+                console.log(nodeId, nodeName)
+                if (nodeAlerts.hasOwn(nodeId)) {
                     console.log(nodeAlerts[nodeId]['status'])
                     nodeStatus = nodeAlerts[nodeId]['status']
                 }
