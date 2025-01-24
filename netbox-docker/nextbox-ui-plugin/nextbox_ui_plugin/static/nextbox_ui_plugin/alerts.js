@@ -46,7 +46,7 @@ class NodeStatusPoller {
             let result = {}
             const filterParam = Object.keys(nodeIds).join(",");
             console.log(filterParam)
-            const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`);
+            const response = await fetch(`${this.statusUrl}/?filter=${filterParam}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
