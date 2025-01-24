@@ -111,9 +111,9 @@ class NodeStatusPoller {
                 let edgeStatus = "ok"
 
                 if (topologyAlerts.hasOwnProperty(aDevice) && topologyAlerts[aDevice]['interfaces'].hasOwnProperty(aInterface)) {
-                    edgeStatus = topologyAlerts[aDevice][aInterface]
+                    edgeStatus = topologyAlerts[aDevice]['interfaces'][aInterface]
                 } else if (topologyAlerts.hasOwnProperty(bDevice) && topologyAlerts[bDevice]['interfaces'].hasOwnProperty(bInterface)) {
-                    edgeStatus = topologyAlerts[bDevice][bInterface]
+                    edgeStatus = topologyAlerts[bDevice]['interfaces'][bInterface]
                 }
                 window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge.setStatus(edgeStatus)
             } catch (error) {
