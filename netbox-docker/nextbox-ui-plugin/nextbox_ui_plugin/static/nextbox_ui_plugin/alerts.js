@@ -70,7 +70,7 @@ class NodeStatusPoller {
         console.log(topologyNodes)
         console.log(nodeAlerts)
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
-            console.log(nodeId, nodeName, nodeAlerts[nodeId]['status'])
+            console.log(nodeId, nodeName, nodeAlerts[nodeId])
             try {
                 let nodeStatus = "ok"
                 if (nodeId in Object.keys(nodeAlerts)) {
