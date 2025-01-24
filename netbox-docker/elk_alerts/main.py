@@ -16,13 +16,16 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
         result = {
             "core_sw_1": {
-                "status": "error"
+                "status": "error",
+                "interfaces": {},
             },
-            "dist_sw_2": {
-                "status": "warning"
+            "dist_sw_1": {
+                "status": "warning",
+                "interfaces": {},
             },
             "edge_ro_1": {
-                "status": "warning"
+                "status": "warning",
+                "interfaces": {},
             },
         }
         if device_filter:

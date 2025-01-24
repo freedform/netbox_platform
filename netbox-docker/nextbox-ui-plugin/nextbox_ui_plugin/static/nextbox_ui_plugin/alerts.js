@@ -69,10 +69,12 @@ class NodeStatusPoller {
     updateNodeStatuses(topologyNodes, nodeAlerts) {
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
+                // Set default value for node status
                 let nodeStatus = "ok"
                 if (nodeAlerts.hasOwnProperty(nodeId)) {
                     nodeStatus = nodeAlerts[nodeId]['status']
                 }
+                // Update node status
                 window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
             } catch (error) {
                 console.error(`Error updating status for node ${nodeName}:`, error);
