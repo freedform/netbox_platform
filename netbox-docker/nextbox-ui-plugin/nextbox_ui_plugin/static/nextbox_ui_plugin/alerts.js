@@ -103,19 +103,24 @@ class NodeStatusPoller {
         });
 
         topologyEdges.forEach(topologyEdge => {
-            const aDevice = topologyEdge['A']['device']
-            const bDevice = topologyEdge['B']['device']
-            const aInterface = topologyEdge['A']['inteface']
-            const bInterface = topologyEdge['B']['inteface']
-            let edgeStatus = "ok"
+            try {
+                const aDevice = topologyEdge['A']['device']
+                const bDevice = topologyEdge['B']['device']
+                const aInterface = topologyEdge['A']['inteface']
+                const bInterface = topologyEdge['B']['inteface']
+                let edgeStatus = "ok"
 
-            if (topologyAlerts.hasOwnProperty(aDevice) && topologyAlerts[aDevice].hasOwnProperty(aInterface)) {
-                edgeStatus = topologyAlerts[aDevice][aInterface]
-            } else if (topologyAlerts.hasOwnProperty(bDevice) && topologyAlerts[bDevice].hasOwnProperty(bInterface)) {
-                edgeStatus = topologyAlerts[bDevice][bInterface]
+                if (topologyAlerts.hasOwnProperty(aDevice) && topologyAlerts[aDevice]['interfaces'].hasOwnProperty(aInterface)) {
+                    edgeStatus = topologyAlerts[aDevice][aInterface]
+                } else if (topologyAlerts.hasOwnProperty(bDevice) && topologyAlerts[bDevice]['interfaces'].hasOwnProperty(bInterface)) {
+                    edgeStatus = topologyAlerts[bDevice][bInterface]
+                }
+                window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge.setStatus(edgeStatus)
+            } catch (error) {
+                console.error(`Error updating status for edge ${topologyEdge}:`, error)
             }
+
             
-            window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge.setStatus(edgeStatus)
         })
     }
 
