@@ -26,37 +26,38 @@ class NodeStatusPoller {
     // Get list of node IDs from topology
     getNodeIds() {
         let result = {};
+        //Topology is unavailable
         if (!window.topoSphere?.topology) {
             console.error('Topology not available');
             return result;
         }
+        // Topology is empty
         if (!window.topoSphere.topology.nodes) {
-            // Topology is empty
             return result;
         }
         window.topoSphere.topology.nodes.forEach(item => {
             result[item.customAttributes.name] = item.id;
         })
+        // returning { "node_name": "node_id" }
         return result;
     }
 
     // Fetch status for nodes
-    async fetchNodeStatuses(nodeIds) {
+    async fetchNodeStatuses(topologyNodes) {
         try {
             let result = {}
-            const filterParam = Object.keys(nodeIds).join(",");
-            console.log(filterParam)
-            const response = await fetch(`${this.statusUrl}/?filter=${filterParam}`);
-
+            // Composing url filter and fetching device status data
+            const filterValue = Object.keys(topologyNodes).join(",");
+            const response = await fetch(`${this.statusUrl}/?filter=${filterValue}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+            // Parsing JSON fetch response
             let responseJson = await response.json();
-            console.log(responseJson)
             Object.entries(responseJson).forEach(([deviceName, deviceData]) => {
-                result[nodeIds[deviceName]] = deviceData
+                result[topologyNodes[deviceName]] = deviceData
             })
+            // returning { "node_id": deviceData }
             return result;
         } catch (error) {
             console.error('Error fetching node statuses:', error);
@@ -65,14 +66,14 @@ class NodeStatusPoller {
     }
 
     // Update node statuses in topology
-    updateNodeStatuses(data) {
-        console.log(data)
-        Object.entries(data).forEach(([deviceId, deviceData]) => {
+    updateNodeStatuses(topologyNodes, nodeAlerts) {
+        Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
-                const node = window.topoSphere.topology.getNode(deviceId);
-                if (node) {
-                    node.setStatus(deviceData);
+                let nodeStatus = "ok"
+                if (nodeId in nodeAlerts) {
+                    nodeStatus = nodeAlerts[nodeId]['status']
                 }
+                window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
             } catch (error) {
                 console.error(`Error updating status for node ${deviceId}:`, error);
             }
