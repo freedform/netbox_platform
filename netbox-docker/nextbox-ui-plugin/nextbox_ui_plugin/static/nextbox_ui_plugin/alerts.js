@@ -70,7 +70,7 @@ class NodeStatusPoller {
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
                 let nodeStatus = "ok"
-                if (nodeId in nodeAlerts) {
+                if (nodeId in Object.keys(nodeAlerts)) {
                     nodeStatus = nodeAlerts[nodeId]['status']
                 }
                 window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
