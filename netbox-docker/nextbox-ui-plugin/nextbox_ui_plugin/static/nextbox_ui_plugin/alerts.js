@@ -1,5 +1,5 @@
 class NodeStatusPoller {
-    constructor(statusUrl, pollInterval = 5000) {
+    constructor(statusUrl, pollInterval) {
         this.statusUrl = statusUrl;
         this.pollInterval = pollInterval;
         this.isPolling = false;
@@ -75,7 +75,7 @@ class NodeStatusPoller {
                 }
                 window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
             } catch (error) {
-                console.error(`Error updating status for node ${nodeId}:`, error);
+                console.error(`Error updating status for node ${nodeName}:`, error);
             }
         });
     }
@@ -103,7 +103,7 @@ class NodeStatusPoller {
 
 
 // const poller = new NodeStatusPoller(window.deviceStatusUrl);
-const poller = new NodeStatusPoller(window.deviceStatusUrl);
+const poller = new NodeStatusPoller(window.deviceStatusUrl, window.deviceStatusUrl);
 
 
 // Start polling
