@@ -7,7 +7,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")  # Allow requests from any origin
+        self.send_header("Access-Control-Allow-Origin", "http://netbox.local:8000")  # Allow requests from any origin
         self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")  # Allowed methods
         self.send_header("Access-Control-Allow-Headers", "Content-Type")  # Allowed headers
         self.end_headers()
