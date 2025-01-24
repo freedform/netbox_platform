@@ -67,15 +67,10 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateNodeStatuses(topologyNodes, nodeAlerts) {
-        console.log(topologyNodes)
-        console.log(nodeAlerts)
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
                 let nodeStatus = "ok"
-                console.log(nodeId, nodeName)
-                console.log(typeof nodeAlerts)
                 if (nodeAlerts.hasOwnProperty(nodeId)) {
-                    console.log(nodeAlerts[nodeId]['status'])
                     nodeStatus = nodeAlerts[nodeId]['status']
                 }
                 window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
