@@ -25,29 +25,26 @@ class NodeStatusPoller {
 
     // Get list of node IDs from topology
     getNodeIds() {
+        let result = {};
         if (!window.topoSphere?.topology) {
             console.error('Topology not available');
-            return [];
+            return result;
         }
         if (!window.topoSphere.topology.nodes) {
             // Topology is empty
-            return [];
+            return result;
         }
-        return window.topoSphere.topology.nodes.map(node => node.id);
+        window.topoSphere.topology.nodes.forEach(item => {
+            result[item.customAttributes.name] = item.id;
+        })
+        return result;
     }
 
     // Fetch status for nodes
     async fetchNodeStatuses(nodeIds) {
         try {
-            console.log("start status check")
-            let nodeNames = [];
-            let nameToIdMap = {};
-            nodeIds.forEach(nodeId => {
-                const node = window.topoSphere.topology.getNode(nodeId);
-                nodeNames.push(node.customAttributes.name);
-                nameToIdMap[node.customAttributes.name] = nodeId;
-            })
-            const filterParam = nodeNames.join(',');
+            let result = {}
+            const filterParam = Object.keys(nodeIds).join(",");
             const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`);
 
             if (!response.ok) {
@@ -55,7 +52,10 @@ class NodeStatusPoller {
             }
 
             let responseJson = await response.json();
-            return {nameToId: nameToIdMap, statusData: responseJson};
+            Object.entries(responseJson).forEach(([deviceName, deviceData]) => {
+                result[nodeIds[deviceName]] = deviceData
+            })
+            return result;
         } catch (error) {
             console.error('Error fetching node statuses:', error);
             return {};
@@ -64,16 +64,15 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateNodeStatuses(data) {
-        const nameToIdMap = data.nameToId;
-        const statusData = data.statusData;
-        Object.entries(statusData).forEach(([name, data]) => {
+        console.log(data)
+        Object.entries(data).forEach(([deviceId, deviceData]) => {
             try {
-                const node = window.topoSphere.topology.getNode(nameToIdMap[name]);
+                const node = window.topoSphere.topology.getNode(deviceId);
                 if (node) {
-                    node.setStatus(data);
+                    node.setStatus(deviceData);
                 }
             } catch (error) {
-                console.error(`Error updating status for node ${id}:`, error);
+                console.error(`Error updating status for node ${deviceId}:`, error);
             }
         });
     }
@@ -84,7 +83,7 @@ class NodeStatusPoller {
 
         try {
             const nodeIds = this.getNodeIds();
-            if (nodeIds.length > 0) {
+            if (Object.entries(nodeIds).length > 0) {
                 const statusData = await this.fetchNodeStatuses(nodeIds);
                 this.updateNodeStatuses(statusData);
             }
