@@ -45,6 +45,7 @@ class NodeStatusPoller {
         try {
             let result = {}
             const filterParam = Object.keys(nodeIds).join(",");
+            console.log(filterParam)
             const response = await fetch(`${this.statusUrl}/?filter='${filterParam}'`);
 
             if (!response.ok) {
@@ -52,6 +53,7 @@ class NodeStatusPoller {
             }
 
             let responseJson = await response.json();
+            console.log(responseJson)
             Object.entries(responseJson).forEach(([deviceName, deviceData]) => {
                 result[nodeIds[deviceName]] = deviceData
             })
