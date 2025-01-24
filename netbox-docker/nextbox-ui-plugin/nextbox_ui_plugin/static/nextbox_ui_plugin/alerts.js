@@ -90,7 +90,7 @@ class NodeStatusPoller {
             const nodeIds = this.getNodeIds();
             if (Object.entries(nodeIds).length > 0) {
                 const statusData = await this.fetchNodeStatuses(nodeIds);
-                this.updateNodeStatuses(statusData);
+                this.updateNodeStatuses(nodeIds, statusData);
             }
         } catch (error) {
             console.error('Error during polling:', error);
