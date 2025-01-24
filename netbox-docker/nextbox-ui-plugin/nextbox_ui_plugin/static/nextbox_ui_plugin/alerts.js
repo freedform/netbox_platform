@@ -67,6 +67,8 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateNodeStatuses(topologyNodes, nodeAlerts) {
+        console.log(topologyNodes)
+        console.log(nodeAlerts)
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
                 let nodeStatus = "ok"
