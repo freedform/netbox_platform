@@ -21,7 +21,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             "dist_sw_2": {
                 "status": "warning"
             },
-            "edge_ro_2": {
+            "edge_ro_1": {
                 "status": "warning"
             },
         }
