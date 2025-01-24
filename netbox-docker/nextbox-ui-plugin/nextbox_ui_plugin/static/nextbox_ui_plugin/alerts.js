@@ -73,7 +73,7 @@ class NodeStatusPoller {
             try {
                 let nodeStatus = "ok"
                 console.log(nodeId, nodeName)
-                if (nodeAlerts.hasOwn(nodeId)) {
+                if (nodeAlerts.hasOwnProperty(nodeId)) {
                     console.log(nodeAlerts[nodeId]['status'])
                     nodeStatus = nodeAlerts[nodeId]['status']
                 }
