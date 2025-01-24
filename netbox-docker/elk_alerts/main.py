@@ -27,7 +27,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             },
             "edge_ro_1": {
                 "status": "warning",
-                "interfaces": {},
+                "interfaces": {
+                    "g0/1": "error"
+                },
             },
         }
         if device_filter:
