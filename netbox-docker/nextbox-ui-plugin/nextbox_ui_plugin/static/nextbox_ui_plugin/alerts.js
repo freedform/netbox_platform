@@ -75,7 +75,7 @@ class NodeStatusPoller {
                 }
                 window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
             } catch (error) {
-                console.error(`Error updating status for node ${deviceId}:`, error);
+                console.error(`Error updating status for node ${nodeId}:`, error);
             }
         });
     }
