@@ -16,7 +16,7 @@ class FetchDeviceStatusAPIView(APIView):
         # Get the filter parameter
         device_filter = request.query_params.get("filter", "")
         # Construct the external API URL
-        external_api_url = f"http://netbox.local:8888/?filter={device_filter}"
+        external_api_url = f"http://elk_alerts:8888/?filter={device_filter}"
 
         try:
             # Fetch JSON from the external API
