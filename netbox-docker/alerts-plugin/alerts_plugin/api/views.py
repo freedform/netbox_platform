@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +8,9 @@ class FetchDeviceStatusAPIView(APIView):
     """
     API endpoint to fetch device status from an external API with optional filters.
     """
+
+    permission_classes = [IsAuthenticated]  # Only authenticated users can access this view
+
 
     def get(self, request, *args, **kwargs):
         # Get the filter parameter
