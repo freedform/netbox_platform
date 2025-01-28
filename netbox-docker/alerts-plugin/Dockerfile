@@ -7,7 +7,6 @@ ENV VIRTUAL_ENV=/opt/netbox/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY ./alerts_plugin /source/alerts-plugin/alerts_plugin
 COPY ./setup.py /source/alerts-plugin/
-COPY ./MANIFEST.in /source/alerts-plugin/
 COPY ./README.md /source/alerts-plugin/
 RUN cd /source/alerts-plugin \
     && pip install .
