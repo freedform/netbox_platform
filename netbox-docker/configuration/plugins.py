@@ -4,7 +4,10 @@
 # To learn how to build images with your required plugins
 # See https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins
 
-PLUGINS = ["nextbox_ui_plugin"]
+PLUGINS = [
+    "nextbox_ui_plugin",
+    "alerts_plugin",
+]
 
 PLUGINS_CONFIG = {
   "nextbox_ui_plugin": {
