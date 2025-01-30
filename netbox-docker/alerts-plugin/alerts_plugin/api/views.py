@@ -3,6 +3,7 @@ import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from dcim.models import Device  # Import NetBox's Device model
+from django.conf import settings
 
 
 class FetchDeviceStatusAPIView(APIView):
@@ -23,14 +24,15 @@ class FetchDeviceStatusAPIView(APIView):
         if not request.user.has_perm("dcim.view_device"):
             return Response({"error": "Permission denied"}, status=403)
 
-        # Get the filter parameter
         device_filter = request.query_params.get("filter", "")
-        # Construct the external API URL
-        external_api_url = f"http://elk_alerts:8888/?filter={device_filter}"
+        external_api_url = settings.PLUGINS_CONFIG.get("alerts_plugin", {}).get("EXTERNAL_API_URL")
+        if not external_api_url:
+            return Response({"error": "External API URL is not configured"}, status=500)
+        full_url = f"{external_api_url}/?filter={device_filter}"
 
         try:
             # Fetch JSON from the external API
-            response = requests.get(external_api_url, timeout=10)
+            response = requests.get(full_url, timeout=10)
             response.raise_for_status()
 
             # Return the JSON response
