@@ -51,13 +51,14 @@ class NodeStatusPoller {
             return result;
         }
         // Topology is empty
-        if (!window.topoSphere.topology.nodes) {
+        if (!window.topoSphere?.topology?.nodes) {
+            console.error('Edges not available');
             return result;
         }
         window.topoSphere.topology.edges.forEach(item => {
             result.push({
-                A: {device: item.sourceNode.id, inteface: item.sourceNodeInterface},
-                B: {device: item.targetNode.id, inteface: item.targetNodeInterface},
+                A: {device: item.sourceNode.id, interface: item.sourceNodeInterface},
+                B: {device: item.targetNode.id, interface: item.targetNodeInterface},
             })
         })
         return result;
@@ -106,13 +107,13 @@ class NodeStatusPoller {
             try {
                 const aDevice = topologyEdge['A']['device']
                 const bDevice = topologyEdge['B']['device']
-                const aInterface = topologyEdge['A']['inteface']
-                const bInterface = topologyEdge['B']['inteface']
+                const aInterface = topologyEdge['A']['interface']
+                const bInterface = topologyEdge['B']['interface']
                 let edgeStatus = "ok"
 
-                if (topologyAlerts.hasOwnProperty(aDevice) && topologyAlerts[aDevice]['interfaces'].hasOwnProperty(aInterface)) {
+                if (topologyAlerts[aDevice]?.interfaces?.[aInterface]) {
                     edgeStatus = topologyAlerts[aDevice]['interfaces'][aInterface]
-                } else if (topologyAlerts.hasOwnProperty(bDevice) && topologyAlerts[bDevice]['interfaces'].hasOwnProperty(bInterface)) {
+                } else if (topologyAlerts[bDevice]?.interfaces?.[bInterface]) {
                     edgeStatus = topologyAlerts[bDevice]['interfaces'][bInterface]
                 }
                 window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge.setStatus(edgeStatus)
@@ -131,7 +132,7 @@ class NodeStatusPoller {
         try {
             const nodeList = this.getNodeIds();
             const edgeList = this.getEdges();
-            if (Object.entries(nodeList).length > 0) {
+            if (Object.keys(nodeList).length > 0) {
                 const statusData = await this.fetchNodeStatuses(nodeList);
                 this.updateTopologyStatus(nodeList, edgeList, statusData);
             }
