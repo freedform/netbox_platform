@@ -25,7 +25,7 @@ class FetchDeviceStatusAPIView(APIView):
             return Response({"error": "Permission denied"}, status=403)
 
         device_filter = request.query_params.get("filter", "")
-        external_api_url = settings.PLUGINS_CONFIG.get("alerts_plugin", {}).get("EXTERNAL_API_URL")
+        external_api_url = settings.PLUGINS_CONFIG.get("alerts_plugin", {}).get("alerts_url")
         if not external_api_url:
             return Response({"error": "External API URL is not configured"}, status=500)
         full_url = f"{external_api_url}/?filter={device_filter}"
