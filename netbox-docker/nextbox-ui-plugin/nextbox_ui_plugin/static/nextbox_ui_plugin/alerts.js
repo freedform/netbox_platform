@@ -51,7 +51,7 @@ class NodeStatusPoller {
             return result;
         }
         // Topology is empty
-        if (!window.topoSphere?.topology?.nodes) {
+        if (!window.topoSphere?.topology?.edges) {
             console.error('Edges not available');
             return result;
         }
