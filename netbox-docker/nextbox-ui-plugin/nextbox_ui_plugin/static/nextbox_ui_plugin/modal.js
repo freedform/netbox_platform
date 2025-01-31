@@ -119,6 +119,7 @@ function nodeClickHandler(event) {
         ['Serial Number', nodeData?.customAttributes?.serialNumber || '–'],
         ['Role', nodeData?.customAttributes?.deviceRole || '–'],
         ['Primary IP', nodeData?.customAttributes?.primaryIP || '–'],
+        ['Alert link', nodeData?.customAttributes?.alert_link || '–'],
     ]
     showModal(titleConfig, tableContent);
 }
