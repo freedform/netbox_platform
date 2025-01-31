@@ -88,8 +88,8 @@ services:
     volumes:
       - ./elk_alerts:/opt
     command: python /opt/main.py
-    ports:
-      - 8888:8888
+#    ports:
+#      - 8888:8888
 volumes:
   netbox-media-files:
     driver: local
