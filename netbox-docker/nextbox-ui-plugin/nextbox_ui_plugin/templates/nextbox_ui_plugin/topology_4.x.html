@@ -59,9 +59,9 @@
     window.initialLayout = '{{ initial_layout|default:"layered" }}';
     window.topologyData = {{ source_data|safe }};
     window.netbox_csrf_token = '{{ csrf_token }}';
-    window.deviceStatusUrl = '{{ device_status_url }}';
-    window.alertsPollingInterval = '{{ alerts_polling_interval }}';
     window.alertsEnable = '{{ alerts_enable }}';
+    window.alertsURL = '{{ alerts_url }}';
+    window.alertsPollingInterval = '{{ alerts_polling_interval }}';
 </script>
 
 <script src="{% static 'nextbox_ui_plugin/topoSphere/topoSphere.js' %}"></script>
