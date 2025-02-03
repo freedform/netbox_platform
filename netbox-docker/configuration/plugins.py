@@ -13,11 +13,10 @@ PLUGINS_CONFIG = {
     "nextbox_ui_plugin": {
         "alerts_enable": True,
         "alerts_url": "http://netbox.local:8000/api/plugins/alerts_plugin/fetch-device-status",
-        "alerts_polling_interval": 5000,
+        "alerts_polling_interval": 5,
         "alerts_device_base_url": "https://someurl.com/alerts?filter=(value=replace_to_name)",
     },
     "alerts_plugin": {
         "alerts_url": "http://elk_alerts:8888"
     }
-
 }
