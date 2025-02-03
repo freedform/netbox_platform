@@ -82,7 +82,6 @@ class NodeStatusPoller {
 
                 if (node.status !== nodeStatus) {
                     node.setStatus(nodeStatus);
-                    node.customAttributes.alertLink = topologyAlerts[nodeId]?.alert_link || null;
                 }
             } catch (error) {
                 console.error(`Error updating status for node ${nodeName}:`, error);
