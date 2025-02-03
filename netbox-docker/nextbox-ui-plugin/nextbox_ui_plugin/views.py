@@ -492,7 +492,7 @@ class TopologyView(PermissionRequiredMixin, View):
             'requestGET': dict(request.GET),
             'device_status_url': PLUGIN_SETTINGS.get('device_status_url', ""),
             'alerts_polling_interval': PLUGIN_SETTINGS.get('alerts_polling_interval', 5000),
-            'alerts_enable': PLUGIN_SETTINGS.get('show_alerts', False),
+            'alerts_enable': PLUGIN_SETTINGS.get('alerts_enable', False),
         })
 
 class SiteTopologyView(TopologyView):
