@@ -120,7 +120,7 @@ function nodeClickHandler(event) {
         ['Role', nodeData?.customAttributes?.deviceRole || '–'],
         ['Primary IP', nodeData?.customAttributes?.primaryIP || '–'],
         ['Alert Link', alertLink !== '–' 
-            ? `<a href="${alertLink}" target="_blank">View Alert</a>` 
+            ? `<a href="${alertLink}" target="_blank">View Alerts</a>` 
             : '–'
         ]
     ];
