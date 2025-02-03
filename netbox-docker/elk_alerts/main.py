@@ -20,7 +20,6 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "interfaces": {
                     "g0/3": "warning"
                 },
-                "alert_link": "https://sfdas/dsadsa"
             },
             # "dist_sw_1": {
             #     "status": "warning",
@@ -32,7 +31,6 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 "interfaces": {
                     "g0/1": "error"
                 },
-                "alert_link": "https://sfdas/dsadsa"
             },
         }
         if device_filter:

@@ -103,22 +103,31 @@ function nodeClickHandler(event) {
     const { nodeId, nodeData, click } = event.detail;
     // Render Node modal window on right mouse button click only
     if (click.button !== 2) return;
+    
     const titleConfig = {
         text: nodeData?.customAttributes?.name,
         href: decodeSanitizedString(nodeData?.customAttributes?.dcimDeviceLink),
     }
+    
+    // Create the Alert Link by replacing 'replace_to_name' with the actual device name
+    const alertLink = window.alertsDeviceBaseURL 
+        ? window.alertsDeviceBaseURL.replace('replace_to_name', nodeData?.customAttributes?.name) 
+        : '–';
+
     const tableContent = [
         ['Model', nodeData?.customAttributes?.model || '–'],
         ['Serial Number', nodeData?.customAttributes?.serialNumber || '–'],
         ['Role', nodeData?.customAttributes?.deviceRole || '–'],
         ['Primary IP', nodeData?.customAttributes?.primaryIP || '–'],
-        ['Alert Link', nodeData?.customAttributes?.alertLink 
-            ? `<a href="${decodeSanitizedString(nodeData?.customAttributes?.alertLink)}" target="_blank">View Alert</a>` 
+        ['Alert Link', alertLink !== '–' 
+            ? `<a href="${alertLink}" target="_blank">View Alert</a>` 
             : '–'
         ]
-    ]
+    ];
+    
     showModal(titleConfig, tableContent);
 }
+
 
 function edgeClickHandler(event) {
     const { edgeId, edgeData, click } = event.detail;

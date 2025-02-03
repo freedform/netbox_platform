@@ -109,7 +109,6 @@ class NodeStatusPoller {
         });
     }
 
-
     // Main polling function
     async poll() {
         if (!this.isPolling) return;
