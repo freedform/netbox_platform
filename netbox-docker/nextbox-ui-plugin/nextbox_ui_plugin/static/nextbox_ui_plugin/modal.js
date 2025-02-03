@@ -72,18 +72,6 @@ function showModal(titleConfig, tableData) {
     table.style.marginTop = '10px';
     table.style.borderCollapse = 'collapse';
 
-    // tableData.forEach(rowData => {
-    //     const row = document.createElement('tr');
-    //     rowData.forEach(cellData => {
-    //         const cell = document.createElement('td');
-    //         cell.innerHTML = cellData;
-    //         cell.style.border = `1px solid ${borderColor}`;
-    //         cell.style.padding = '8px';
-    //         cell.style.color = textColor;
-    //         row.appendChild(cell);
-    //     });
-    //     table.appendChild(row);
-    // });
     table.innerHTML = tableData.map(rowData => 
         `<tr>${rowData.map(cellData => 
             `<td style="border: 1px solid ${borderColor}; padding: 8px; color: ${textColor};">${cellData}</td>`
@@ -94,7 +82,6 @@ function showModal(titleConfig, tableData) {
     modal.appendChild(title);
     modal.appendChild(table);  
     overlay.appendChild(modal);
-    // container.style.position = 'relative';
     container.appendChild(overlay);
 
     // Close the modal when clicking outside it

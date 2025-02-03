@@ -65,7 +65,7 @@ class NodeStatusPoller {
             Object.entries(responseJson).forEach(([deviceName, deviceData]) => {
                 result[topologyNodes[deviceName]] = deviceData
             })
-            // returning { "node_id": deviceData }
+            // Returning { "node_id": deviceData }
             return result;
         } catch (error) {
             console.error('Error fetching node statuses:', error);
@@ -75,38 +75,41 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateTopologyStatus(topologyNodes, topologyEdges, topologyAlerts) {
-        // Update nodes
         Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
             try {
-                // Set default value for node status
-                let nodeStatus = "ok"
-                if (topologyAlerts[nodeId]) {
-                    nodeStatus = topologyAlerts[nodeId]['status']
+                let nodeStatus = topologyAlerts[nodeId]?.status || "ok";
+                let node = window.topoSphere.topology.getNode(nodeId);
+
+                if (node.status !== nodeStatus) {
+                    node.setStatus(nodeStatus);
                 }
-                // Update node status
-                window.topoSphere.topology.getNode(nodeId).setStatus(nodeStatus)
             } catch (error) {
                 console.error(`Error updating status for node ${nodeName}:`, error);
             }
         });
-        // Update edges
+
         topologyEdges.forEach(topologyEdge => {
             try {
-                // Define edge sides
-                const aDevice = topologyEdge['A']['device']
-                const bDevice = topologyEdge['B']['device']
-                const aInterface = topologyEdge['A']['interface']
-                const bInterface = topologyEdge['B']['interface']
-                let edgeStatus = topologyAlerts[aDevice]?.interfaces?.[aInterface] 
-                                ?? topologyAlerts[bDevice]?.interfaces?.[bInterface] 
-                                ?? "ok";
-                // Update edge status
-                window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge.setStatus(edgeStatus)
+                const aDevice = topologyEdge['A']['device'];
+                const bDevice = topologyEdge['B']['device'];
+                const aInterface = topologyEdge['A']['interface'];
+                const bInterface = topologyEdge['B']['interface'];
+
+                let edgeStatus = topologyAlerts[aDevice]?.interfaces?.[aInterface]
+                              ?? topologyAlerts[bDevice]?.interfaces?.[bInterface]
+                              ?? "ok";
+
+                let edge = window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge;
+
+                if (edge.status !== edgeStatus) {
+                    edge.setStatus(edgeStatus);
+                }
             } catch (error) {
-                console.error(`Error updating status for edge ${topologyEdge}:`, error)
+                console.error(`Error updating status for edge ${JSON.stringify(topologyEdge)}:`, error);
             }
-        })
+        });
     }
+
 
     // Main polling function
     async poll() {
