@@ -136,6 +136,6 @@ class NodeStatusPoller {
 if (window.alertsEnable == "True") {
     const pollIntervalMs = window.alertsPollingInterval * 1000;  // Convert seconds to milliseconds
     const poller = new NodeStatusPoller(window.alertsURL, pollIntervalMs);
-    console.log("Starting alert polling", window.alertsEnable);
+    console.log("Starting alert polling");
     poller.start();
 }
