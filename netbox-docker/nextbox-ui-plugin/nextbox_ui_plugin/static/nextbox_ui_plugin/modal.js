@@ -168,3 +168,8 @@ window.addEventListener('topoSphere.edgeDoubleTapped', (event) => {
     event.preventDefault();
     edgeClickHandler(event);
 });
+
+// Additionally, suppress right-click menu globally for the topology container
+document.getElementById('topology-container').addEventListener('contextmenu', (event) => {
+    event.preventDefault();  // Disable context menu in the topology container
+});
