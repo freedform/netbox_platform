@@ -82,6 +82,7 @@ class NodeStatusPoller {
 
                 if (node.status !== nodeStatus) {
                     node.setStatus(nodeStatus);
+                    node.customAttributes.alertLink = topologyAlerts[nodeId]?.alert_link || null;
                 }
             } catch (error) {
                 console.error(`Error updating status for node ${nodeName}:`, error);
@@ -98,7 +99,6 @@ class NodeStatusPoller {
                 let edgeStatus = topologyAlerts[aDevice]?.interfaces?.[aInterface]
                               ?? topologyAlerts[bDevice]?.interfaces?.[bInterface]
                               ?? "ok";
-
                 let edge = window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge;
 
                 if (edge.status !== edgeStatus) {

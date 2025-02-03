@@ -18,18 +18,21 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             "core_sw_1": {
                 "status": "error",
                 "interfaces": {
-                    # "g0/3": "warning"
+                    "g0/3": "warning"
                 },
+                "alert_link": "https://sfdas/dsadsa"
             },
             "dist_sw_1": {
                 "status": "warning",
                 "interfaces": {},
+                "alert_link": "https://sfdas/dsadsa"
             },
             "edge_ro_1": {
                 "status": "warning",
                 "interfaces": {
                     "g0/1": "error"
                 },
+                "alert_link": "https://sfdas/dsadsa"
             },
         }
         if device_filter:
