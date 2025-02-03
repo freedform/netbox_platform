@@ -7,9 +7,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "http://netbox.local:8000")  # !!! dynamic value
-        self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        # self.send_header("Access-Control-Allow-Origin", "http://netbox.local:8000")  # !!! dynamic value
+        # self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+        # self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         query_components = parse_qs(urlparse(self.path).query)
         device_filter = query_components.get("filter", [])
@@ -21,11 +21,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                     "g0/3": "warning"
                 },
             },
-            # "dist_sw_1": {
-            #     "status": "warning",
-            #     "interfaces": {},
-            #     "alert_link": "https://sfdas/dsadsa"
-            # },
+            "dist_sw_1": {
+                "status": "warning",
+                "interfaces": {},
+            },
             "edge_ro_1": {
                 "status": "warning",
                 "interfaces": {
