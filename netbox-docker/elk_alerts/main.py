@@ -22,11 +22,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 },
                 "alert_link": "https://sfdas/dsadsa"
             },
-            "dist_sw_1": {
-                "status": "warning",
-                "interfaces": {},
-                "alert_link": "https://sfdas/dsadsa"
-            },
+            # "dist_sw_1": {
+            #     "status": "warning",
+            #     "interfaces": {},
+            #     "alert_link": "https://sfdas/dsadsa"
+            # },
             "edge_ro_1": {
                 "status": "warning",
                 "interfaces": {
