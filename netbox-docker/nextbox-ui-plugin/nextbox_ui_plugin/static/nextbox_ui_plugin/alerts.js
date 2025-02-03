@@ -135,7 +135,7 @@ class NodeStatusPoller {
 }
 
 
-if (window.showAlerts) {
+if (window.alertsEnable) {
     const poller = new NodeStatusPoller(window.deviceStatusUrl, window.alertsPollingInterval);
     poller.start();
 }
