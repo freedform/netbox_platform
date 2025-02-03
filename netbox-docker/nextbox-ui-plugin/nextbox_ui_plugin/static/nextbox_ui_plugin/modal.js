@@ -75,7 +75,7 @@ function showModal(titleConfig, tableData) {
         const row = document.createElement('tr');
         rowData.forEach(cellData => {
             const cell = document.createElement('td');
-            cell.textContent = cellData;
+            cell.innerHTML = cellData;
             cell.style.border = `1px solid ${borderColor}`;
             cell.style.padding = '8px';
             cell.style.color = textColor;
@@ -119,7 +119,10 @@ function nodeClickHandler(event) {
         ['Serial Number', nodeData?.customAttributes?.serialNumber || '–'],
         ['Role', nodeData?.customAttributes?.deviceRole || '–'],
         ['Primary IP', nodeData?.customAttributes?.primaryIP || '–'],
-        ['Alert link', `<a href=${nodeData?.customAttributes?.alert_link}>click here</a>` || '–'],
+        ['Alert Link', nodeData?.customAttributes?.alertLink 
+            ? `<a href="${decodeSanitizedString(nodeData?.customAttributes?.alertLink)}" target="_blank">View Alert</a>` 
+            : '–'
+        ]
     ]
     showModal(titleConfig, tableContent);
 }
