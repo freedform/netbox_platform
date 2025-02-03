@@ -7,6 +7,7 @@ function decodeSanitizedString(sanitizedStr) {
 }
 
 function showModal(titleConfig, tableData) {
+    hideModal();
     const container = document.getElementById('topology-container');
 
     if (!container) {
@@ -71,24 +72,29 @@ function showModal(titleConfig, tableData) {
     table.style.marginTop = '10px';
     table.style.borderCollapse = 'collapse';
 
-    tableData.forEach(rowData => {
-        const row = document.createElement('tr');
-        rowData.forEach(cellData => {
-            const cell = document.createElement('td');
-            cell.innerHTML = cellData;
-            cell.style.border = `1px solid ${borderColor}`;
-            cell.style.padding = '8px';
-            cell.style.color = textColor;
-            row.appendChild(cell);
-        });
-        table.appendChild(row);
-    });
+    // tableData.forEach(rowData => {
+    //     const row = document.createElement('tr');
+    //     rowData.forEach(cellData => {
+    //         const cell = document.createElement('td');
+    //         cell.innerHTML = cellData;
+    //         cell.style.border = `1px solid ${borderColor}`;
+    //         cell.style.padding = '8px';
+    //         cell.style.color = textColor;
+    //         row.appendChild(cell);
+    //     });
+    //     table.appendChild(row);
+    // });
+    table.innerHTML = tableData.map(rowData => 
+        `<tr>${rowData.map(cellData => 
+            `<td style="border: 1px solid ${borderColor}; padding: 8px; color: ${textColor};">${cellData}</td>`
+        ).join('')}</tr>`
+    ).join('');
 
     // Construct the resulting modal window
     modal.appendChild(title);
     modal.appendChild(table);  
     overlay.appendChild(modal);
-    container.style.position = 'relative';
+    // container.style.position = 'relative';
     container.appendChild(overlay);
 
     // Close the modal when clicking outside it
