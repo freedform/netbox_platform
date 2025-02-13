@@ -144,13 +144,13 @@ function edgeClickHandler(event) {
         href: linkHref,
     }
 
-    sourceBwURL = window.intefaceBwURL 
+    const sourceBwURL = window.intefaceBwURL 
         ? window.intefaceBwURL
             .replace("device_name", edgeData?.sourceNode?.customAttributes?.name)
             .replace("interface_name", edgeData?.sourceNodeInterface )
         : '–'
 
-    targerBwURL = window.intefaceBwURL 
+    const targerBwURL = window.intefaceBwURL 
         ? window.intefaceBwURL
             .replace("device_name", edgeData?.targerNode?.customAttributes?.name)
             .replace("interface_name", edgeData?.targerNodeInterface )
@@ -159,12 +159,12 @@ function edgeClickHandler(event) {
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
-        ['Source Alert Link', sourceAlertLink !== '–' 
-            ? `<a href="${sourceAlertLink}" target="_blank">View Source Alerts</a>` 
+        ['Source Alert Link', sourceBwURL !== '–' 
+            ? `<a href="${sourceBwURL}" target="_blank">View Source Alerts</a>` 
             : '–'
         ],
-        ['Target Alert Link', targetAlertLink !== '–' 
-            ? `<a href="${targetAlertLink}" target="_blank">View Target Alerts</a>` 
+        ['Target Alert Link', targerBwURL !== '–' 
+            ? `<a href="${targerBwURL}" target="_blank">View Target Alerts</a>` 
             : '–'
         ]
     ]
