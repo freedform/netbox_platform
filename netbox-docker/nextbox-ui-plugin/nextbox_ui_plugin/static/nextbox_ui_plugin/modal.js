@@ -166,7 +166,8 @@ function edgeClickHandler(event) {
         ['Target Alert Link', targerBwURL !== '–' 
             ? `<a href="${targerBwURL}" target="_blank">View Target Alerts</a>` 
             : '–'
-        ]
+        ],
+        ['eee', edgeData]
     ]
     showModal(titleConfig, tableContent);
 }
