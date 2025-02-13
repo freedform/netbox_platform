@@ -6,7 +6,7 @@ from dcim.models import Device  # Import NetBox's Device model
 from django.conf import settings
 
 
-class FetchDeviceStatusAPIView(APIView):
+class GetEndpointData(APIView):
     """
     API endpoint to fetch device status from multiple external APIs with optional filters.
     """
@@ -29,7 +29,7 @@ class FetchDeviceStatusAPIView(APIView):
         device_filter = request.query_params.get("filter", "").strip()
 
         # Get the external URLs from the plugin settings
-        available_endpoints = settings.PLUGINS_CONFIG.get("alerts_plugin", {})
+        available_endpoints = settings.PLUGINS_CONFIG.get("endpoints_plugin", {})
 
         if not endpoint_key:
             return Response(

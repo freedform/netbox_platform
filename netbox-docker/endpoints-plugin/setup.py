@@ -1,9 +1,9 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='alerts_plugin',
+    name='endpoints_plugin',
     version='0.1',
-    description='An example NetBox plugin',
+    description='Endpoints plugin',
     install_requires=[],
     packages=find_packages(),
     include_package_data=True,
