@@ -144,14 +144,14 @@ function edgeClickHandler(event) {
         href: linkHref,
     }
 
-    const sourceBwURL = window.intefaceBwURL 
-        ? window.intefaceBwURL
+    const sourceBwURL = window.intefaceBwBaseURL 
+        ? window.intefaceBwBaseURL
             .replace("device_name", edgeData?.sourceNode?.customAttributes?.name)
             .replace("interface_name", edgeData?.sourceNodeInterface )
         : '–'
 
-    const targerBwURL = window.intefaceBwURL 
-        ? window.intefaceBwURL
+    const targerBwURL = window.intefaceBwBaseURL 
+        ? window.intefaceBwBaseURL
             .replace("device_name", edgeData?.targerNode?.customAttributes?.name)
             .replace("interface_name", edgeData?.targerNodeInterface )
         : '–'
