@@ -59,7 +59,7 @@ function showModal(titleConfig, tableData) {
         link.style.textDecoration = 'underline';
     }
     link.textContent = titleConfig.text;
-    link.target = '_blank'; 
+    link.target = '_blank';
     title.style.fontSize = '24px';
     title.style.fontWeight = 'bold';
     title.style.color = textColor;
@@ -72,15 +72,15 @@ function showModal(titleConfig, tableData) {
     table.style.marginTop = '10px';
     table.style.borderCollapse = 'collapse';
 
-    table.innerHTML = tableData.map(rowData => 
-        `<tr>${rowData.map(cellData => 
+    table.innerHTML = tableData.map(rowData =>
+        `<tr>${rowData.map(cellData =>
             `<td style="border: 1px solid ${borderColor}; padding: 8px; color: ${textColor};">${cellData}</td>`
         ).join('')}</tr>`
     ).join('');
 
     // Construct the resulting modal window
     modal.appendChild(title);
-    modal.appendChild(table);  
+    modal.appendChild(table);
     overlay.appendChild(modal);
     container.appendChild(overlay);
 
@@ -103,15 +103,15 @@ function nodeClickHandler(event) {
     const { nodeId, nodeData, click } = event.detail;
     // Render Node modal window on right mouse button click only
     if (click.button !== 2) return;
-    
+
     const titleConfig = {
         text: nodeData?.customAttributes?.name,
         href: decodeSanitizedString(nodeData?.customAttributes?.dcimDeviceLink),
     }
-    
+
     // Create the Alert Link by replacing 'replace_to_name' with the actual device name
-    const alertLink = window.alertsDeviceBaseURL 
-        ? window.alertsDeviceBaseURL.replace('replace_to_name', nodeData?.customAttributes?.name) 
+    const alertLink = window.alertsDeviceBaseURL
+        ? window.alertsDeviceBaseURL.replace('replace_to_name', nodeData?.customAttributes?.name)
         : '–';
 
     const tableContent = [
@@ -119,12 +119,12 @@ function nodeClickHandler(event) {
         ['Serial Number', nodeData?.customAttributes?.serialNumber || '–'],
         ['Role', nodeData?.customAttributes?.deviceRole || '–'],
         ['Primary IP', nodeData?.customAttributes?.primaryIP || '–'],
-        ['Alert Link', alertLink !== '–' 
-            ? `<a href="${alertLink}" target="_blank">View Alerts</a>` 
+        ['Alert Link', alertLink !== '–'
+            ? `<a href="${alertLink}" target="_blank">View Alerts</a>`
             : '–'
         ]
     ];
-    
+
     showModal(titleConfig, tableContent);
 }
 
@@ -133,45 +133,51 @@ function edgeClickHandler(event) {
     const { edgeId, edgeData, click } = event.detail;
     // Render Edge modal window on right mouse button click only
     if (click.button !== 2) return;
-    let linkName = edgeData?.customAttributes?.name;
-    let linkHref = decodeSanitizedString(edgeData?.customAttributes?.dcimCableURL);
+
+    let linkName = edgeData?.customAttributes?.name || 'Unknown';
+    let linkHref = decodeSanitizedString(edgeData?.customAttributes?.dcimCableURL || '');
+
     if (edgeData.isBundled) {
         linkName = 'LAG';
         linkHref = '';
     }
+
     const titleConfig = {
         text: linkName,
         href: linkHref,
-    }
-    console.log(edgeData)
-    const sourceBwURL = window.intefaceBwBaseURL 
-        ? window.intefaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.source)
-            .replace("interface_name", edgeData?.sourceInterface
-                 )
-        : '–'
+    };
 
-    const targerBwURL = window.intefaceBwBaseURL 
-        ? window.intefaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.target)
-            .replace("interface_name", edgeData?.targetInterface )
-        : '–'
+    // Ensure global variable name is correct (`interfaceBwBaseURL` instead of `intefaceBwBaseURL`)
+    if (typeof window.interfaceBwBaseURL === 'undefined') {
+        console.error("window.interfaceBwBaseURL is not defined!");
+    }
+
+    const sourceBwURL = window.interfaceBwBaseURL
+        ? window.interfaceBwBaseURL
+            .replace("device_name", edgeData?.customAttributes?.source || 'unknown_device')
+            .replace("interface_name", edgeData?.sourceInterface || 'unknown_interface')
+        : '–';
+
+    const targetBwURL = window.interfaceBwBaseURL
+        ? window.interfaceBwBaseURL
+            .replace("device_name", edgeData?.customAttributes?.target || 'unknown_device')
+            .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
+        : '–';
 
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
-        ['Source utilization', sourceBwURL !== '–' 
-            ? `<a href="${sourceBwURL}" target="_blank">View utilization</a>` 
-            : '–'
-        ],
-        ['Target utilization', targerBwURL !== '–' 
-            ? `<a href="${targerBwURL}" target="_blank">View utilization</a>` 
-            : '–'
-        ],
-        ['eee', edgeData]
-    ]
+        ['Source Utilization', sourceBwURL !== '–'
+            ? `<a href="${sourceBwURL}" target="_blank">View Utilization</a>`
+            : '–'],
+        ['Target Utilization', targetBwURL !== '–'
+            ? `<a href="${targetBwURL}" target="_blank">View Utilization</a>`
+            : '–'],
+    ];
+
     showModal(titleConfig, tableContent);
 }
+
 
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
