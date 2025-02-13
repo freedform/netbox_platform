@@ -12,7 +12,7 @@ PLUGINS = [
 PLUGINS_CONFIG = {
     "nextbox_ui_plugin": {
         "alerts_enable": True,
-        "alerts_url": "http://netbox.local:8000/api/plugins/alerts_plugin/fetch-device-status?endpoint=alerts",
+        "alerts_url": "http://netbox.local:8000/api/plugins/alerts_plugin/fetch-device-status",
         "alerts_polling_interval": 5,
         "alerts_device_base_url": "https://someurl.com/alerts?filter=(value=replace_to_name)",
         "interface_bw_base_url": "https://some_monitoring.com?device=device_name&inteface=interface_name)"
@@ -21,3 +21,6 @@ PLUGINS_CONFIG = {
         "alerts": "http://elk_alerts:8888"
     }
 }
+
+
+http://netbox.local:8000/api/plugins/alerts_plugin/fetch-device-status/?endpoint=alerts/?filter=core_sw_1,core_sw_2,dist_sw_1,dist_sw_2,edge_ro_1,edge_ro_2
