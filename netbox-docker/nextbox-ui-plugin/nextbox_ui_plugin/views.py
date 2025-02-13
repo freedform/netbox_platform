@@ -374,8 +374,8 @@ def get_topology(nb_devices_qs, params):
                 "dcimCableURL": link_url,
                 "source": link.a_terminations[0].device.name,
                 "target": link.b_terminations[0].device.name,
-                "sourceTags": [tag.name for tag in link.a_terminations[0].tags] if hasattr(link.a_terminations[0], 'tags') else [],
-                "targetTags": [tag.name for tag in link.b_terminations[0].tags] if hasattr(link.b_terminations[0], 'tags') else [],
+                "sourceTags": [tag.name for tag in link.a_terminations[0].tags.all()] if hasattr(link.a_terminations[0], 'tags') else [],
+                "targetTags": [tag.name for tag in link.b_terminations[0].tags.all()] if hasattr(link.b_terminations[0], 'tags') else [],
             }
         }
         if display_passive:
