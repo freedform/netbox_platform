@@ -56,7 +56,7 @@ class NodeStatusPoller {
             let result = {}
             // Composing url filter and fetching device status data
             const filterValue = Object.keys(topologyNodes).join(",");
-            const response = await fetch(`${this.statusUrl}/?filter=${filterValue}`);
+            const response = await fetch(`${this.statusUrl}/?endpoint=alerts&filter=${filterValue}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
