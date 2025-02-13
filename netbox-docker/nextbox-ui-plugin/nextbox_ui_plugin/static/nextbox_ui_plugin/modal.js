@@ -179,7 +179,6 @@ function edgeClickHandler(event) {
 }
 
 
-
 window.addEventListener('topoSphere.nodeClicked', (event) => {
     event.preventDefault();
     nodeClickHandler(event);
