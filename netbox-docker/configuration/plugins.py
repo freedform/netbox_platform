@@ -21,6 +21,3 @@ PLUGINS_CONFIG = {
         "alerts": "http://elk_alerts:8888"
     }
 }
-
-
-http://netbox.local:8000/api/plugins/alerts_plugin/fetch-device-status/?endpoint=alerts/?filter=core_sw_1,core_sw_2,dist_sw_1,dist_sw_2,edge_ro_1,edge_ro_2
