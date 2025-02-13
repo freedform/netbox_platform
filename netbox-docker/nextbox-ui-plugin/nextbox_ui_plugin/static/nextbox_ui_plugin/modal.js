@@ -160,12 +160,12 @@ function edgeClickHandler(event) {
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
-        ['Source Alert Link', sourceBwURL !== '–' 
-            ? `<a href="${sourceBwURL}" target="_blank">View Source Alerts</a>` 
+        ['Source utilization', sourceBwURL !== '–' 
+            ? `<a href="${sourceBwURL}" target="_blank">View utilization</a>` 
             : '–'
         ],
-        ['Target Alert Link', targerBwURL !== '–' 
-            ? `<a href="${targerBwURL}" target="_blank">View Target Alerts</a>` 
+        ['Target utilization', targerBwURL !== '–' 
+            ? `<a href="${targerBwURL}" target="_blank">View utilization</a>` 
             : '–'
         ],
         ['eee', edgeData]
