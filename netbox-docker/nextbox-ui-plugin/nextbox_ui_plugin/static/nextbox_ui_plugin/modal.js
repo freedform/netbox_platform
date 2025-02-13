@@ -143,7 +143,7 @@ function edgeClickHandler(event) {
         text: linkName,
         href: linkHref,
     }
-
+    console.log(edgeData)
     const sourceBwURL = window.intefaceBwBaseURL 
         ? window.intefaceBwBaseURL
             .replace("device_name", edgeData?.sourceNode?.customAttributes?.name)
@@ -152,8 +152,8 @@ function edgeClickHandler(event) {
 
     const targerBwURL = window.intefaceBwBaseURL 
         ? window.intefaceBwBaseURL
-            .replace("device_name", edgeData?.targerNode?.customAttributes?.name)
-            .replace("interface_name", edgeData?.targerNodeInterface )
+            .replace("device_name", edgeData?.targetNode?.customAttributes?.name)
+            .replace("interface_name", edgeData?.targetNodeInterface )
         : '–'
 
     const tableContent = [
