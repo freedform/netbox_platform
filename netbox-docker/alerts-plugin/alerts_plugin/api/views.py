@@ -24,11 +24,16 @@ class FetchDeviceStatusAPIView(APIView):
         if not request.user.has_perm("dcim.view_device"):
             return Response({"error": "Permission denied"}, status=403)
 
-        device_filter = request.query_params.get("filter", "")
-        external_api_url = settings.PLUGINS_CONFIG.get("alerts_plugin", {}).get("alerts_url")
+        # Fetch the external API URL from NetBox settings
+        external_api_url = settings.PLUGINS_CONFIG.get("alerts_plugin", {}).get("alerts_url", "").rstrip("/")
         if not external_api_url:
             return Response({"error": "External API URL is not configured"}, status=500)
-        full_url = f"{external_api_url}/?filter={device_filter}"
+
+        # Get filter parameter and sanitize it
+        device_filter = request.query_params.get("filter", "").strip()
+
+        # Construct the API URL dynamically
+        full_url = f"{external_api_url}/?filter={device_filter}" if device_filter else external_api_url
 
         try:
             # Fetch JSON from the external API
@@ -38,6 +43,9 @@ class FetchDeviceStatusAPIView(APIView):
             # Return the JSON response
             return Response(response.json())
 
+        except requests.exceptions.ConnectionError:
+            return Response({"error": "Failed to connect to the external API"}, status=502)
+        except requests.exceptions.Timeout:
+            return Response({"error": "The external API request timed out"}, status=504)
         except requests.exceptions.RequestException as e:
-            # Return an error response in case of failure
-            return Response({"error": str(e)}, status=500)
+            return Response({"error": f"API request failed: {str(e)}"}, status=500)
