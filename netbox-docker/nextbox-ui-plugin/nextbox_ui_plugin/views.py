@@ -496,6 +496,7 @@ class TopologyView(PermissionRequiredMixin, View):
             'alerts_url': PLUGIN_SETTINGS.get('alerts_url', ""),
             'alerts_polling_interval': PLUGIN_SETTINGS.get('alerts_polling_interval', 5000),
             'alerts_device_base_url': PLUGIN_SETTINGS.get('alerts_device_base_url'),
+            'interface_bw_base_url': PLUGIN_SETTINGS.get('interface_bw_base_url'),
         })
 
 class SiteTopologyView(TopologyView):

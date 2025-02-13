@@ -143,9 +143,30 @@ function edgeClickHandler(event) {
         text: linkName,
         href: linkHref,
     }
+
+    sourceBwURL = window.intefaceBwURL 
+        ? window.intefaceBwURL
+            .replace("device_name", edgeData?.sourceNode?.customAttributes?.name)
+            .replace("interface_name", edgeData?.sourceNodeInterface )
+        : '–'
+
+    targerBwURL = window.intefaceBwURL 
+        ? window.intefaceBwURL
+            .replace("device_name", edgeData?.targerNode?.customAttributes?.name)
+            .replace("interface_name", edgeData?.targerNodeInterface )
+        : '–'
+
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
+        ['Source Alert Link', sourceAlertLink !== '–' 
+            ? `<a href="${sourceAlertLink}" target="_blank">View Source Alerts</a>` 
+            : '–'
+        ],
+        ['Target Alert Link', targetAlertLink !== '–' 
+            ? `<a href="${targetAlertLink}" target="_blank">View Target Alerts</a>` 
+            : '–'
+        ]
     ]
     showModal(titleConfig, tableContent);
 }
