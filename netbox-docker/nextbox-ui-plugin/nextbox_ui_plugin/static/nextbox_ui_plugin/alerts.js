@@ -1,6 +1,6 @@
 class NodeStatusPoller {
-    constructor(statusUrl, pollInterval) {
-        this.statusUrl = statusUrl;
+    constructor(alertsURL, pollInterval) {
+        this.alertsURL = alertsURL;
         this.pollInterval = pollInterval;
         this.isPolling = false;
         this.pollTimer = null;
@@ -51,18 +51,18 @@ class NodeStatusPoller {
     }
 
     // Fetch status for nodes
-    async fetchNodeStatuses(topologyNodes) {
+    async fetchNodesData(topologyNodes) {
         try {
             let result = {}
             // Composing url filter and fetching device status data
             const filterValue = Object.keys(topologyNodes).join(",");
-            const response = await fetch(`${this.statusUrl}/?endpoint=alerts&filter=${filterValue}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const alertsResponse = await fetch(`${this.alertsURL}/?endpoint=alerts&filter=${filterValue}`);
+            if (!alertsResponse.ok) {
+                throw new Error(`HTTP error! status: ${alertsResponse.status}`);
             }
             // Parsing JSON fetch response
-            let responseJson = await response.json();
-            Object.entries(responseJson).forEach(([deviceName, deviceData]) => {
+            let alertsJSON = await alertsResponse.json();
+            Object.entries(alertsJSON).forEach(([deviceName, deviceData]) => {
                 result[topologyNodes[deviceName]] = deviceData
             })
             // Returning { "node_id": deviceData }
@@ -118,7 +118,7 @@ class NodeStatusPoller {
             const nodeList = this.getNodeIds();
             const edgeList = this.getEdges();
             if (Object.keys(nodeList).length > 0) {
-                const statusData = await this.fetchNodeStatuses(nodeList);
+                const statusData = await this.fetchNodesData(nodeList);
                 this.updateTopologyStatus(nodeList, edgeList, statusData);
             }
         } catch (error) {
@@ -136,6 +136,6 @@ class NodeStatusPoller {
 if (window.alertsEnable == "True") {
     const pollIntervalMs = window.alertsPollingInterval * 1000;  // Convert seconds to milliseconds
     const poller = new NodeStatusPoller(window.alertsURL, pollIntervalMs);
-    console.log("Starting alert polling");
+    console.log("Start dynamic topology updating");
     poller.start();
 }
