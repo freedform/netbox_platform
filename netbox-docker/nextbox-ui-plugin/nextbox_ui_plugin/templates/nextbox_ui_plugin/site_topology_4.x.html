@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
     window.initialLayout = '{{ initial_layout|default:"layered" }}';
-    window.topologyData = '{{ source_data|safe }}';
+    window.topologyData = {{ source_data|safe }};
     window.netbox_csrf_token = '{{ csrf_token }}';
     window.dynamicUpdateEnabled = '{{ alerts_enable }}';
     window.dynamicUpdateInterval = '{{ alerts_polling_interval }}';
