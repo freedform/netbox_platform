@@ -147,6 +147,8 @@ class NodeStatusPoller {
             // Get Nodes and Edges
             const nodeList = this.getNodes();
             const edgeList = this.getEdges();
+            console.log(nodeList)
+            console.log(edgeList)
             console.log(Object.keys(nodeList).length)
             if (Object.keys(nodeList).length > 0) {
                 const statusData = await this.fetchNodesData(nodeList);
