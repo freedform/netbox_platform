@@ -18,6 +18,7 @@ PLUGINS_CONFIG = {
         "interface_bw_base_url": "https://some_monitoring.com?device=device_name&inteface=interface_name)"
     },
     "endpoints_plugin": {
-        "alerts": "http://elk_alerts:8888"
+        "alerts": "http://elk_alerts:8888",
+        "bw": "http://interface_utilization:7777",
     }
 }
