@@ -494,6 +494,7 @@ class TopologyView(PermissionRequiredMixin, View):
             'requestGET': dict(request.GET),
             'alerts_enable': PLUGIN_SETTINGS.get('alerts_enable', False),
             'alerts_url': PLUGIN_SETTINGS.get('alerts_url', ""),
+            'bw_url': PLUGIN_SETTINGS.get('bw_url', ""),
             'alerts_polling_interval': PLUGIN_SETTINGS.get('alerts_polling_interval', 5000),
             'alerts_device_base_url': PLUGIN_SETTINGS.get('alerts_device_base_url'),
             'interface_bw_base_url': PLUGIN_SETTINGS.get('interface_bw_base_url'),
