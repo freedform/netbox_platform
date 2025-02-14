@@ -24,13 +24,13 @@ class NodeStatusPoller {
     }
 
     // Get topology Nodes
-    getNodeIds() {
+    // Get topology Nodes and return a map of { "device_name": node_object }
+    getNodes() {
         if (!window.topoSphere?.topology?.nodes) {
-            console.error('Node are not available');
-            return {};
+            console.error('Nodes are not available');
+            return new Map();
         }
-        // Returning { "node_name": "node_id" }
-        return Object.fromEntries(window.topoSphere.topology.nodes.map(item => [item.customAttributes.name, item.id]));
+        return new Map(window.topoSphere.topology.nodes.map(node => [node.customAttributes.name, node]));
     }
 
     // Get topology Edges
@@ -54,26 +54,26 @@ class NodeStatusPoller {
     async fetchNodesData(topologyNodes) {
         try {
             let result = {};
-            const filterValue = Object.keys(topologyNodes).join(",");
-
+            const filterValue = Array.from(topologyNodes.keys()).join(","); // Convert map keys to a comma-separated string
+    
             // Define API endpoints
             const endpoints = {
                 alertsData: `${this.nbEnpointsURL}/?endpoint=alerts&filter=${filterValue}`,
                 bwData: `${this.nbEnpointsURL}/?endpoint=bw&filter=${filterValue}`,
             };
-
+    
             // Fetch all endpoints in parallel
             const responses = await Promise.allSettled(
                 Object.entries(endpoints).map(([key, url]) => fetch(url).then(res => ({ key, res })))
             );
-
+    
             // Process responses
             for (const response of responses) {
                 if (response.status === "fulfilled" && response.value.res.ok) {
                     const jsonData = await response.value.res.json();
                     result[response.value.key] = Object.fromEntries(
-                        Object.entries(jsonData).map(([deviceName, deviceData]) =>
-                            [topologyNodes[deviceName], deviceData]
+                        Object.entries(jsonData).map(([deviceName, deviceData]) => 
+                            [topologyNodes.get(deviceName)?.id, deviceData] // Use node object to get the ID
                         ).filter(([deviceId]) => deviceId) // Remove undefined device IDs
                     );
                 } else {
@@ -87,16 +87,16 @@ class NodeStatusPoller {
             return {};
         }
     }
+    
 
     // Update node statuses in topology
     updateTopologyStatus(topologyNodes, topologyEdges, topologyData) {
         const { alertsData, bwData } = topologyData; // Extract alerts and bandwidth data
-
-        Object.entries(topologyNodes).forEach(([nodeName, nodeId]) => {
+    
+        // Process node statuses using pre-fetched node objects
+        Object.entries(topologyNodes).forEach(([nodeName, node]) => {
             try {
-                let nodeStatus = alertsData?.[nodeId]?.status || "ok";
-                let node = window.topoSphere.topology.getNode(nodeId);
-
+                let nodeStatus = alertsData?.[node.id]?.status || "ok";
                 if (node.status !== nodeStatus) {
                     node.setStatus(nodeStatus);
                 }
@@ -104,38 +104,39 @@ class NodeStatusPoller {
                 console.error(`Error updating status for node ${nodeName}:`, error);
             }
         });
-
+    
+        // Keep the edge processing logic unchanged
         topologyEdges.forEach(topologyEdge => {
             try {
                 const aDevice = topologyEdge['A']['device'];
                 const bDevice = topologyEdge['B']['device'];
                 const aInterface = topologyEdge['A']['interface'];
                 const bInterface = topologyEdge['B']['interface'];
-
+    
                 // Determine edge status from alertsData
                 let edgeStatus = alertsData?.[aDevice]?.interfaces?.[aInterface]
                               ?? alertsData?.[bDevice]?.interfaces?.[bInterface]
                               ?? "ok";
                 let edge = window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge;
-
+    
                 if (edge.status !== edgeStatus) {
                     edge.setStatus(edgeStatus);
                 }
-
-                // // Update bandwidth for both interfaces if present in bwData
+    
+                // Update bandwidth for both interfaces if present in bwData
                 // if (bwData?.[aDevice]?.[aInterface]) {
-                //     // window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].setBw(bwData[aDevice][aInterface]);
-                //     console.log(bwData[aDevice][aInterface])
+                //     console.log(bwData[aDevice][aInterface]);
                 // }
                 // if (bwData?.[bDevice]?.[bInterface]) {
-                //     // window.topoSphere.topology.getNode(bDevice).interfaces[bInterface].setBw(bwData[bDevice][bInterface]);
-                //     console.log(bwData[bDevice][bInterface])
+                //     console.log(bwData[bDevice][bInterface]);
                 // }
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge ${JSON.stringify(topologyEdge)}:`, error);
             }
         });
     }
+    
+    
 
     // Main polling function
     async poll() {
@@ -143,7 +144,7 @@ class NodeStatusPoller {
 
         try {
             // Get Nodes and Edges
-            const nodeList = this.getNodeIds();
+            const nodeList = this.getNodes();
             const edgeList = this.getEdges();
             if (Object.keys(nodeList).length > 0) {
                 const statusData = await this.fetchNodesData(nodeList);
