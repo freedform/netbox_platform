@@ -122,15 +122,15 @@ class NodeStatusPoller {
                     edge.setStatus(edgeStatus);
                 }
 
-                // Update bandwidth for both interfaces if present in bwData
-                if (bwData?.[aDevice]?.[aInterface]) {
-                    // window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].setBw(bwData[aDevice][aInterface]);
-                    console.log(bwData[aDevice][aInterface])
-                }
-                if (bwData?.[bDevice]?.[bInterface]) {
-                    // window.topoSphere.topology.getNode(bDevice).interfaces[bInterface].setBw(bwData[bDevice][bInterface]);
-                    console.log(bwData[bDevice][bInterface])
-                }
+                // // Update bandwidth for both interfaces if present in bwData
+                // if (bwData?.[aDevice]?.[aInterface]) {
+                //     // window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].setBw(bwData[aDevice][aInterface]);
+                //     console.log(bwData[aDevice][aInterface])
+                // }
+                // if (bwData?.[bDevice]?.[bInterface]) {
+                //     // window.topoSphere.topology.getNode(bDevice).interfaces[bInterface].setBw(bwData[bDevice][bInterface]);
+                //     console.log(bwData[bDevice][bInterface])
+                // }
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge ${JSON.stringify(topologyEdge)}:`, error);
             }
