@@ -133,8 +133,8 @@ class NodeStatusPoller {
 }
 
 
-if (window.alertsEnable == "True") {
-    const pollIntervalMs = window.alertsPollingInterval * 1000;  // Convert seconds to milliseconds
+if (window.dynamicUpdateEnabled == "True") {
+    const pollIntervalMs = window.dynamicUpdateInterval * 1000;  // Convert seconds to milliseconds
     const poller = new NodeStatusPoller(window.alertsURL, pollIntervalMs);
     console.log("Start dynamic topology updating");
     poller.start();

@@ -57,11 +57,11 @@
 {% block javascript %}
 <script type="text/javascript">
     window.initialLayout = '{{ initial_layout|default:"layered" }}';
-    window.topologyData = {{ source_data|safe }};
+    window.topologyData = '{{ source_data|safe }}';
     window.netbox_csrf_token = '{{ csrf_token }}';
-    window.alertsEnable = '{{ alerts_enable }}';
+    window.dynamicUpdateEnabled = '{{ alerts_enable }}';
+    window.dynamicUpdateInterval = '{{ alerts_polling_interval }}';
     window.alertsURL = '{{ alerts_url }}';
-    window.alertsPollingInterval = '{{ alerts_polling_interval }}';
     window.alertsDeviceBaseURL = '{{ alerts_device_base_url }}';
     window.interfaceBwBaseURL = '{{ interface_bw_base_url }}';
 </script>
