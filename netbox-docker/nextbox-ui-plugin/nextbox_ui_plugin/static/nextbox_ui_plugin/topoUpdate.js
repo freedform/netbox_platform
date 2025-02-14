@@ -92,8 +92,10 @@ class NodeStatusPoller {
     // Update node statuses in topology
     updateTopologyStatus(topologyNodes, topologyEdges, topologyData) {
         const { alertsData, bwData } = topologyData; // Extract alerts and bandwidth data
+        console.log(topologyData)
         // Process node statuses using pre-fetched node objects
         Object.entries(topologyNodes).forEach(([nodeName, node]) => {
+            console.log(nodeName, node.status)
             try {
                 let nodeStatus = alertsData?.[node.id]?.status || "ok";
                 if (node.status !== nodeStatus) {
