@@ -23,7 +23,6 @@ class NodeStatusPoller {
         }
     }
 
-    // Get topology Nodes
     // Get topology Nodes and return a map of { "device_name": node_object }
     getNodes() {
         if (!window.topoSphere?.topology?.nodes) {
@@ -39,15 +38,7 @@ class NodeStatusPoller {
             console.error('Edges are not available');
             return [];
         }
-        // Returining a list of dicts:
-        // {
-        //      "A": { "device": "device_id", "interface": "interface_name" },
-        //      "B": { "device": "device_id", "interface": "interface_name" },
-        // }
-        return window.topoSphere.topology.edges.map(item => ({
-            A: { device: item.sourceNode.id, interface: item.sourceNodeInterface },
-            B: { device: item.targetNode.id, interface: item.targetNodeInterface }
-        }));
+        return window.topoSphere.topology.edges;
     }
 
     // Fetch status for nodes from multiple endpoints
@@ -91,11 +82,10 @@ class NodeStatusPoller {
 
     // Update node statuses in topology
     updateTopologyStatus(topologyNodes, topologyEdges, topologyData) {
-        const { alertsData, bwData } = topologyData; // Extract alerts and bandwidth data
-        console.log(topologyData)
-        // Process node statuses using pre-fetched node objects
-        topologyNodes.forEach((node, nodeName) => { // Map iteration
-            console.log(nodeName, node.status);
+        const { alertsData, bwData } = topologyData;
+    
+        // Process node statuses
+        topologyNodes.forEach((node, nodeName) => {
             try {
                 let nodeStatus = alertsData?.[node.id]?.status || "ok";
                 if (node.status !== nodeStatus) {
@@ -105,38 +95,40 @@ class NodeStatusPoller {
                 console.error(`Error updating status for node ${nodeName}:`, error);
             }
         });
-        
     
-        // Keep the edge processing logic unchanged
-        topologyEdges.forEach(topologyEdge => {
+        // Process edge statuses and bandwidth updates
+        topologyEdges.forEach(edge => {
             try {
-                const aDevice = topologyEdge['A']['device'];
-                const bDevice = topologyEdge['B']['device'];
-                const aInterface = topologyEdge['A']['interface'];
-                const bInterface = topologyEdge['B']['interface'];
+                const sourceDeviceId = edge.sourceNode.id;
+                const targetDeviceId = edge.targetNode.id;
+                const sourceInterface = edge.sourceNodeInterface;
+                const targetInterface = edge.targetNodeInterface;
     
                 // Determine edge status from alertsData
-                let edgeStatus = alertsData?.[aDevice]?.interfaces?.[aInterface]
-                              ?? alertsData?.[bDevice]?.interfaces?.[bInterface]
+                let edgeStatus = alertsData?.[sourceDeviceId]?.interfaces?.[sourceInterface] 
+                              ?? alertsData?.[targetDeviceId]?.interfaces?.[targetInterface]
                               ?? "ok";
-                let edge = window.topoSphere.topology.getNode(aDevice).interfaces[aInterface].edge;
     
                 if (edge.status !== edgeStatus) {
                     edge.setStatus(edgeStatus);
                 }
     
-                // Update bandwidth for both interfaces if present in bwData
-                // if (bwData?.[aDevice]?.[aInterface]) {
-                //     console.log(bwData[aDevice][aInterface]);
-                // }
-                // if (bwData?.[bDevice]?.[bInterface]) {
-                //     console.log(bwData[bDevice][bInterface]);
-                // }
+                // Update bandwidth if bwData exists
+                if (bwData?.[sourceDeviceId]?.[sourceInterface]) {
+                    // edge.setBw(bwData[sourceDeviceId][sourceInterface]);
+                    console.log(bwData[sourceDeviceId][sourceInterface]);
+                }
+                if (bwData?.[targetDeviceId]?.[targetInterface]) {
+                    // edge.setBw(bwData[targetDeviceId][targetInterface]);
+                    console.log(bwData[targetDeviceId][targetInterface]);
+                }
+    
             } catch (error) {
-                console.error(`Error updating status or bandwidth for edge ${JSON.stringify(topologyEdge)}:`, error);
+                console.error(`Error updating status or bandwidth for edge`, error);
             }
         });
     }
+    
     
     
 
