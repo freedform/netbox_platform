@@ -94,8 +94,8 @@ class NodeStatusPoller {
         const { alertsData, bwData } = topologyData; // Extract alerts and bandwidth data
         console.log(topologyData)
         // Process node statuses using pre-fetched node objects
-        Object.entries(topologyNodes).forEach(([nodeName, node]) => {
-            console.log(nodeName, node.status)
+        topologyNodes.forEach((node, nodeName) => { // Map iteration
+            console.log(nodeName, node.status);
             try {
                 let nodeStatus = alertsData?.[node.id]?.status || "ok";
                 if (node.status !== nodeStatus) {
@@ -105,6 +105,7 @@ class NodeStatusPoller {
                 console.error(`Error updating status for node ${nodeName}:`, error);
             }
         });
+        
     
         // Keep the edge processing logic unchanged
         topologyEdges.forEach(topologyEdge => {
