@@ -59,10 +59,9 @@
     window.initialLayout = '{{ initial_layout|default:"layered" }}';
     window.topologyData = {{ source_data|safe }};
     window.netbox_csrf_token = '{{ csrf_token }}';
-    window.dynamicUpdateEnabled = '{{ alerts_enable }}';
-    window.dynamicUpdateInterval = '{{ alerts_polling_interval }}';
-    window.alertsURL = '{{ alerts_url }}';
-    window.bwURL = '{{ bw_url }}';
+    window.dynamicUpdateEnabled = '{{ dynamic_update_enable }}';
+    window.dynamicUpdateInterval = '{{ dynamic_update_interval }}';
+    window.nbEnpointsURL = '{{ nb_endpoints_url }}';
     window.alertsDeviceBaseURL = '{{ alerts_device_base_url }}';
     window.interfaceBwBaseURL = '{{ interface_bw_base_url }}';
 </script>

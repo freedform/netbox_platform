@@ -11,15 +11,14 @@ PLUGINS = [
 
 PLUGINS_CONFIG = {
     "nextbox_ui_plugin": {
-        "alerts_enable": True,
-        "alerts_url": "http://netbox.local:8000/api/plugins/endpoints_plugin/get-data",
-        "bw_url": "http://netbox.local:8000/api/plugins/endpoints_plugin/get-data",
-        "alerts_polling_interval": 5,
+        "dynamic_update_enable": True,
+        "dynamic_update_interval": 5,
+        "nb_endpoints_url": "http://netbox.local:8000/api/plugins/endpoints_plugin/get-data",
         "alerts_device_base_url": "https://someurl.com/alerts?filter=(value=replace_to_name)",
-        "interface_bw_base_url": "https://some_monitoring.com?device=device_name&inteface=interface_name)"
+        "interface_bw_base_url": "https://some_monitoring.com?device=device_name&inteface=interface_name)",
     },
     "endpoints_plugin": {
         "alerts": "http://elk_alerts:8888",
         "bw": "http://interface_utilization:7777",
-    }
+    },
 }

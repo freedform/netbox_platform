@@ -280,7 +280,7 @@ def get_topology(nb_devices_qs, params):
         # Filter out cables with incomplete terminations
         links_from_device = [c for c in links_from_device if (c.a_terminations and c.b_terminations)]
         links_to_device = [c for c in links_to_device if (c.a_terminations and c.b_terminations)]
-        
+
         interfaces_found = False
         if links_from_device:
             for link in links_from_device:
@@ -296,7 +296,7 @@ def get_topology(nb_devices_qs, params):
                         break
         if links_to_device or links_from_device:
             device_is_passive = not interfaces_found
-        
+
         if not (links_from_device or links_to_device):
             divice_is_unconnected = True
         else:
@@ -492,10 +492,9 @@ class TopologyView(PermissionRequiredMixin, View):
             ),
             'model': Device,
             'requestGET': dict(request.GET),
-            'alerts_enable': PLUGIN_SETTINGS.get('alerts_enable', False),
-            'alerts_url': PLUGIN_SETTINGS.get('alerts_url', ""),
-            'bw_url': PLUGIN_SETTINGS.get('bw_url', ""),
-            'alerts_polling_interval': PLUGIN_SETTINGS.get('alerts_polling_interval', 5000),
+            'dynamic_update_enable': PLUGIN_SETTINGS.get('dynamic_update_enable', False),
+            'dynamic_update_interval': PLUGIN_SETTINGS.get('dynamic_update_interval', 5),
+            'nb_endpoints_url': PLUGIN_SETTINGS.get('nb_endpoints_url', ""),
             'alerts_device_base_url': PLUGIN_SETTINGS.get('alerts_device_base_url'),
             'interface_bw_base_url': PLUGIN_SETTINGS.get('interface_bw_base_url'),
         })
