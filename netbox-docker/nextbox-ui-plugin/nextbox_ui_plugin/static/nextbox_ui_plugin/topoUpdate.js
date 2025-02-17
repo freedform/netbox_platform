@@ -136,16 +136,6 @@ class NodeStatusPoller {
                     edge.targetNode.interfaces[targetInterface].labelText = targetInterface
                     edge.targetNode.interfaces[targetInterface].collapse()
                 }
-
-
-                if (bwData?.[sourceDeviceId]?.[sourceInterface]) {
-                    // edge.setBw(bwData[sourceDeviceId][sourceInterface]);
-                    console.log(bwData[sourceDeviceId][sourceInterface]);
-                }
-                if (bwData?.[targetDeviceId]?.[targetInterface]) {
-                    // edge.setBw(bwData[targetDeviceId][targetInterface]);
-                    console.log(bwData[targetDeviceId][targetInterface]);
-                }
     
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge`, error);
