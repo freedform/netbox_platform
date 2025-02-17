@@ -124,19 +124,15 @@ class NodeStatusPoller {
                 // Define labels (default to interface name if no speed data)
                 
                 // Function to update interface label and expansion state
-                const updateInterface = (iface, newLabel) => {
-                    if (iface.labelText !== newLabel) {
+                for (const [iface, newLabel] of [
+                    [edge.sourceNode.interfaces[sourceInterface], labelA],
+                    [edge.targetNode.interfaces[targetInterface], labelB]
+                ]) {
+                    if (iface && iface.labelText !== newLabel) {
                         iface.labelText = newLabel;
-                        if (newLabel.includes(" -> ")) {
-                            iface.expand();
-                        } else {
-                            iface.collapse();
-                        }
+                        newLabel.includes(" -> ") ? iface.expand() : iface.collapse();
                     }
-                };
-    
-                updateInterface(edge.sourceNode.interfaces[sourceInterface], labelA);
-                updateInterface(edge.targetNode.interfaces[targetInterface], labelB);
+                }
     
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge`, error);
