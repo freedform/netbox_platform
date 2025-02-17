@@ -113,29 +113,29 @@ class NodeStatusPoller {
                     edge.setStatus(edgeStatus);
                 }
     
-                // Update bandwidth if bwData exists
+                // Get bandwidth values
                 let speedA = bwData?.[sourceDeviceId]?.[sourceInterface]?.out
-                          ?? bwData?.[targetDeviceId]?.[targetInterface]?.in
-                          ?? 0;
+                          ?? bwData?.[targetDeviceId]?.[targetInterface]?.in;
+                let labelA = speedA ? `${sourceInterface} -> ${speedA}` : sourceInterface;
                 let speedB = bwData?.[targetDeviceId]?.[targetInterface]?.out
-                          ?? bwData?.[sourceDeviceId]?.[sourceInterface]?.in
-                          ?? 0;
+                          ?? bwData?.[sourceDeviceId]?.[sourceInterface]?.in;
+                let labelB = speedB ? `${targetInterface} -> ${speedB}` : targetInterface;
+                // Define labels (default to interface name if no speed data)
                 
-                if (speedA != 0) {
-                    edge.sourceNode.interfaces[sourceInterface].labelText = `${sourceInterface} - ${speedA}`
-                    edge.sourceNode.interfaces[sourceInterface].expand()
-                } else {
-                    edge.sourceNode.interfaces[sourceInterface].labelText = sourceInterface
-                    edge.sourceNode.interfaces[sourceInterface].collapse()
-                }
-
-                if (speedB != 0) {
-                    edge.targetNode.interfaces[targetInterface].labelText = `${targetInterface} - ${speedB}`
-                    edge.targetNode.interfaces[targetInterface].expand()
-                } else {
-                    edge.targetNode.interfaces[targetInterface].labelText = targetInterface
-                    edge.targetNode.interfaces[targetInterface].collapse()
-                }
+                // Function to update interface label and expansion state
+                const updateInterface = (interface, newLabel) => {
+                    if (interface.labelText !== newLabel) {
+                        interface.labelText = newLabel;
+                        if (newLabel.includes(" -> ")) {
+                            interface.expand();
+                        } else {
+                            interface.collapse();
+                        }
+                    }
+                };
+    
+                updateInterface(edge.sourceNode[sourceInterface], labelA);
+                updateInterface(edge.targetNode[targetInterface], labelB);
     
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge`, error);
