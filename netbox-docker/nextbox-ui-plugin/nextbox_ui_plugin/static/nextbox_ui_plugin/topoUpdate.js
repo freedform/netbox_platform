@@ -145,35 +145,11 @@ class NodeStatusPoller {
         });
     }
     
-    
-    
-
     // Main polling function
-    // async poll() {
-    //     if (!this.isPolling) return;
-
-    //     try {
-    //         // Get Nodes and Edges
-    //         const nodeList = this.getNodes();
-    //         const edgeList = this.getEdges();
-    //         if (!nodeList.size) return;
-    //         const statusData = await this.fetchNodesData(nodeList);
-    //         this.updateTopologyStatus(nodeList, edgeList, statusData);
-    //     } catch (error) {
-    //         console.error('Error during polling:', error);
-    //     } finally {
-    //         // Schedule next poll if still active
-    //         if (this.isPolling) {
-    //             this.pollTimer = setTimeout(() => this.poll(), this.pollInterval);
-    //         }
-    //     }
-    // }
     async poll() {
-        if (this.isPolling) return; // Skip if already polling
-        
+        if (!this.isPolling) return;
+
         try {
-            this.isPolling = true; // Mark polling as in progress
-    
             // Get Nodes and Edges
             const nodeList = this.getNodes();
             const edgeList = this.getEdges();
@@ -183,16 +159,12 @@ class NodeStatusPoller {
         } catch (error) {
             console.error('Error during polling:', error);
         } finally {
-            this.isPolling = false; // Mark polling as complete
-    
-            // Always schedule the next poll regardless of the current state
+            // Schedule next poll if still active
             if (this.isPolling) {
-                // Only schedule a new poll if polling is still ongoing
                 this.pollTimer = setTimeout(() => this.poll(), this.pollInterval);
             }
         }
     }
-    
 }
 
 
