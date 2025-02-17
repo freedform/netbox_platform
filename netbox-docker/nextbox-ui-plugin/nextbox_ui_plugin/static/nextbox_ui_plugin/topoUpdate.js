@@ -149,14 +149,31 @@ class NodeStatusPoller {
     
 
     // Main polling function
+    // async poll() {
+    //     if (!this.isPolling) return;
+
+    //     try {
+    //         // Get Nodes and Edges
+    //         const nodeList = this.getNodes();
+    //         const edgeList = this.getEdges();
+    //         if (!nodeList.size) return;
+    //         const statusData = await this.fetchNodesData(nodeList);
+    //         this.updateTopologyStatus(nodeList, edgeList, statusData);
+    //     } catch (error) {
+    //         console.error('Error during polling:', error);
+    //     } finally {
+    //         // Schedule next poll if still active
+    //         if (this.isPolling) {
+    //             this.pollTimer = setTimeout(() => this.poll(), this.pollInterval);
+    //         }
+    //     }
+    // }
     async poll() {
-        if (this.isPolling) {
-            this.pollQueued = true; // Mark that a poll is queued
-            return; // Skip if already polling
-        }
-    
+        if (this.isPolling) return; // Skip if already polling
+        
         try {
             this.isPolling = true; // Mark polling as in progress
+    
             // Get Nodes and Edges
             const nodeList = this.getNodes();
             const edgeList = this.getEdges();
@@ -167,14 +184,14 @@ class NodeStatusPoller {
             console.error('Error during polling:', error);
         } finally {
             this.isPolling = false; // Mark polling as complete
-            // Schedule next poll if still active
-            if (this.isPolling || this.pollQueued) {
-                this.pollQueued = false; // Reset the queued flag
-                this.pollTimer = setTimeout(() => this.poll(), this.pollInterval); // Trigger the next poll
+    
+            // Always schedule the next poll regardless of the current state
+            if (this.isPolling) {
+                // Only schedule a new poll if polling is still ongoing
+                this.pollTimer = setTimeout(() => this.poll(), this.pollInterval);
             }
         }
     }
-    
     
 }
 
