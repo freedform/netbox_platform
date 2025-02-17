@@ -45,39 +45,45 @@ class NodeStatusPoller {
     async fetchNodesData(topologyNodes) {
         try {
             let result = {};
-            const filterValue = Array.from(topologyNodes.keys()).join(","); // Convert map keys to a comma-separated string
+            const filterValue = Array.from(topologyNodes.keys()).join(",");
     
-            // Define API endpoints
             const endpoints = {
                 alertsData: `${this.nbEnpointsURL}/?endpoint=alerts&filter=${filterValue}`,
                 bwData: `${this.nbEnpointsURL}/?endpoint=bw&filter=${filterValue}`,
             };
     
-            // Fetch all endpoints in parallel
-            const responses = await Promise.allSettled(
-                Object.entries(endpoints).map(([key, url]) => fetch(url).then(res => ({ key, res })))
+            // Fetch all endpoints in parallel and process responses together
+            const responses = await Promise.all(
+                Object.entries(endpoints).map(async ([key, url]) => {
+                    try {
+                        const res = await fetch(url);
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        return [key, await res.json()];
+                    } catch (err) {
+                        console.warn(`Failed to fetch ${key}:`, err);
+                        return [key, {}]; // Return an empty object on failure
+                    }
+                })
             );
     
-            // Process responses
-            for (const response of responses) {
-                if (response.status === "fulfilled" && response.value.res.ok) {
-                    const jsonData = await response.value.res.json();
-                    result[response.value.key] = Object.fromEntries(
-                        Object.entries(jsonData).map(([deviceName, deviceData]) => 
-                            [topologyNodes.get(deviceName)?.id, deviceData] // Use node object to get the ID
-                        ).filter(([deviceId]) => deviceId) // Remove undefined device IDs
-                    );
-                } else {
-                    console.warn(`Failed to fetch ${response.value?.key}:`, response.reason || response.value?.res?.status);
-                    result[response.value?.key] = {}; // Set empty object for failed requests
-                }
+            // Convert response array into an object
+            for (const [key, jsonData] of responses) {
+                result[key] = Object.fromEntries(
+                    Object.entries(jsonData)
+                        .map(([deviceName, deviceData]) => 
+                            [topologyNodes.get(deviceName)?.id, deviceData]
+                        )
+                        .filter(([deviceId]) => deviceId)
+                );
             }
+    
             return result;
         } catch (error) {
             console.error('Unexpected error fetching node data:', error);
             return {};
         }
     }
+    
     
 
     // Update node statuses in topology
@@ -151,10 +157,9 @@ class NodeStatusPoller {
             // Get Nodes and Edges
             const nodeList = this.getNodes();
             const edgeList = this.getEdges();
-            if (nodeList.size > 0) {
-                const statusData = await this.fetchNodesData(nodeList);
-                this.updateTopologyStatus(nodeList, edgeList, statusData);
-            }
+            if (!nodeList.size) return;
+            const statusData = await this.fetchNodesData(nodeList);
+            this.updateTopologyStatus(nodeList, edgeList, statusData);
         } catch (error) {
             console.error('Error during polling:', error);
         } finally {
