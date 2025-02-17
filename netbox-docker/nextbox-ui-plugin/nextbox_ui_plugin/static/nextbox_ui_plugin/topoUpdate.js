@@ -123,13 +123,13 @@ class NodeStatusPoller {
                 // Define labels (default to interface name if no speed data)
                 
                 // Function to update interface label and expansion state
-                const updateInterface = (interface, newLabel) => {
-                    if (interface.labelText !== newLabel) {
-                        interface.labelText = newLabel;
+                const updateInterface = (iface, newLabel) => {
+                    if (iface.labelText !== newLabel) {
+                        iface.labelText = newLabel;
                         if (newLabel.includes(" -> ")) {
-                            interface.expand();
+                            iface.expand();
                         } else {
-                            interface.collapse();
+                            iface.collapse();
                         }
                     }
                 };
