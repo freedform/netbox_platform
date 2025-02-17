@@ -127,7 +127,6 @@ class NodeStatusPoller {
                 let speedB = bwData?.[targetDeviceId]?.[targetInterface]?.out
                           ?? bwData?.[sourceDeviceId]?.[sourceInterface]?.in;
                 let labelB = speedB ? `${targetInterface} -> ${speedB}` : targetInterface;
-                // Define labels (default to interface name if no speed data)
                 
                 // Function to update interface label and expansion state
                 for (const [iface, newLabel] of [
