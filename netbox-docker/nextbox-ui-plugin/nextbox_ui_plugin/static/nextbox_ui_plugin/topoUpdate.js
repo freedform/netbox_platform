@@ -117,6 +117,7 @@ class NodeStatusPoller {
                 let speedA = bwData?.[sourceDeviceId]?.[sourceInterface]?.out
                           ?? bwData?.[targetDeviceId]?.[targetInterface]?.in;
                 let labelA = speedA ? `${sourceInterface} -> ${speedA}` : sourceInterface;
+
                 let speedB = bwData?.[targetDeviceId]?.[targetInterface]?.out
                           ?? bwData?.[sourceDeviceId]?.[sourceInterface]?.in;
                 let labelB = speedB ? `${targetInterface} -> ${speedB}` : targetInterface;
@@ -134,8 +135,8 @@ class NodeStatusPoller {
                     }
                 };
     
-                updateInterface(edge.sourceNode[sourceInterface], labelA);
-                updateInterface(edge.targetNode[targetInterface], labelB);
+                updateInterface(edge.sourceNode.interfaces[sourceInterface], labelA);
+                updateInterface(edge.targetNode.interfaces[targetInterface], labelB);
     
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge`, error);
