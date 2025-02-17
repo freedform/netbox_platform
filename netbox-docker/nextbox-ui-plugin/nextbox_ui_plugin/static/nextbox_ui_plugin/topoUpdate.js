@@ -150,11 +150,13 @@ class NodeStatusPoller {
 
     // Main polling function
     async poll() {
-        if (this.isPolling) return; // Skip if already polling
+        if (this.isPolling) {
+            this.pollQueued = true; // Mark that a poll is queued
+            return; // Skip if already polling
+        }
     
         try {
             this.isPolling = true; // Mark polling as in progress
-
             // Get Nodes and Edges
             const nodeList = this.getNodes();
             const edgeList = this.getEdges();
@@ -165,13 +167,14 @@ class NodeStatusPoller {
             console.error('Error during polling:', error);
         } finally {
             this.isPolling = false; // Mark polling as complete
-    
             // Schedule next poll if still active
-            if (this.isPolling) {
-                this.pollTimer = setTimeout(() => this.poll(), this.pollInterval);
+            if (this.isPolling || this.pollQueued) {
+                this.pollQueued = false; // Reset the queued flag
+                this.pollTimer = setTimeout(() => this.poll(), this.pollInterval); // Trigger the next poll
             }
         }
     }
+    
     
 }
 
