@@ -23,10 +23,16 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
             result = {
                 "core_sw_1": {
-                    "g0/3": "3.5 Mbit/s"
+                    "g0/3": {
+                        "in": "3.5 Mbit/s",
+                        "out": "6.5 Mbit/s",
+                    },
                 },
                 "edge_ro_1": {
-                    "g0/1": "1.2 Gbit/s"
+                    "g0/1": {
+                        "in": "1.2 Gbit/s",
+                        "out": "2.2 Gbit/s",
+                    }
                 },
             }
 

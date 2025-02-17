@@ -113,15 +113,39 @@ class NodeStatusPoller {
                     edge.setStatus(edgeStatus);
                 }
     
-                // // Update bandwidth if bwData exists
-                // if (bwData?.[sourceDeviceId]?.[sourceInterface]) {
-                //     // edge.setBw(bwData[sourceDeviceId][sourceInterface]);
-                //     console.log(bwData[sourceDeviceId][sourceInterface]);
-                // }
-                // if (bwData?.[targetDeviceId]?.[targetInterface]) {
-                //     // edge.setBw(bwData[targetDeviceId][targetInterface]);
-                //     console.log(bwData[targetDeviceId][targetInterface]);
-                // }
+                // Update bandwidth if bwData exists
+                let speedA = bwData?.[sourceDeviceId]?.[sourceInterface]?.out
+                          ?? bwData?.[targetDeviceId]?.[targetInterface]?.in
+                          ?? 0;
+                let speedB = bwData?.[targetDeviceId]?.[targetInterface]?.out
+                          ?? bwData?.[sourceDeviceId]?.[sourceInterface]?.in
+                          ?? 0;
+                
+                if (speedA != 0) {
+                    edge.sourceNode.interfaces[sourceInterface].labelText = `${sourceInterface} - ${speedA}`
+                    edge.sourceNode.interfaces[sourceInterface].expand()
+                } else {
+                    edge.sourceNode.interfaces[sourceInterface].labelText = sourceInterface
+                    edge.sourceNode.interfaces[sourceInterface].collapse()
+                }
+
+                if (speedB != 0) {
+                    edge.targetNode.interfaces[targetInterface].labelText = `${targetInterface} - ${speedB}`
+                    edge.targetNode.interfaces[targetInterface].expand()
+                } else {
+                    edge.targetNode.interfaces[targetInterface].labelText = targetInterface
+                    edge.targetNode.interfaces[targetInterface].collapse()
+                }
+
+
+                if (bwData?.[sourceDeviceId]?.[sourceInterface]) {
+                    // edge.setBw(bwData[sourceDeviceId][sourceInterface]);
+                    console.log(bwData[sourceDeviceId][sourceInterface]);
+                }
+                if (bwData?.[targetDeviceId]?.[targetInterface]) {
+                    // edge.setBw(bwData[targetDeviceId][targetInterface]);
+                    console.log(bwData[targetDeviceId][targetInterface]);
+                }
     
             } catch (error) {
                 console.error(`Error updating status or bandwidth for edge`, error);
