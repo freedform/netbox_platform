@@ -20,5 +20,6 @@ PLUGINS_CONFIG = {
     "endpoints_plugin": {
         "alerts": "http://elk_alerts:8888",
         "bw": "http://interface_utilization:7777",
+        "ifdata": "http://interface_data:6666",
     },
 }

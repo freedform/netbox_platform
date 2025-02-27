@@ -158,7 +158,7 @@ function edgeClickHandler(event) {
             .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
         : '–';
 
-    const minAvgMaxURL = `http://link.detail.local/?device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
+    const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata/?device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
 
     // Create a button for Min/Avg/Max data fetching
     const minAvgMaxButton = `<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Fetch Data</button>`;
@@ -185,9 +185,8 @@ function edgeClickHandler(event) {
                 try {
                     const response = await fetch(minAvgMaxURL);
                     const data = await response.json();
-                    const interfaceName = edgeData?.sourceInterface || 'unknown_interface';
-                    if (data[interfaceName]) {
-                        fetchButton.outerHTML = `Min: ${data[interfaceName].min} | Avg: ${data[interfaceName].avg} | Max: ${data[interfaceName].max}`;
+                    if (data) {
+                        fetchButton.outerHTML = `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`;
                     } else {
                         fetchButton.outerHTML = "Data unavailable";
                     }
