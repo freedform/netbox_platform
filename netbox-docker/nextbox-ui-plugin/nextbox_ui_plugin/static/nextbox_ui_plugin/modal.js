@@ -193,26 +193,39 @@ function edgeClickHandler(event) {
     document.getElementById("fetchMinAvgMax")?.addEventListener("click", async function () {
         const fetchButton = this;
         const resultSpan = document.getElementById("minAvgMaxResult");
-
+    
         fetchButton.disabled = true;
         fetchButton.textContent = "Loading...";
-
+    
         try {
             const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
             const data = await response.json();
-            
-            sourceData = data.sourceDevice?.sourceInterface
-            targetData = data.targetDevice?.targetInterface
-            console.log(data)
-            console.log(sourceDevice, targetDevice, sourceInterface, targetInterface)
-            console.log(sourceData, targetData)
-            if (sourceData) {
-                resultSpan.innerHTML = `IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br> OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max}`
-            } else if (targetData) {
-                resultSpan.innerHTML = `IN - Min: ${targetData.out.min} | Avg: ${targetData.out.avg} | Max: ${targetData.out.max} <br> OUT - Min: ${targetData.in.min} | Avg: ${targetData.in.avg} | Max: ${targetData.in.max}`
+    
+            console.log("Fetched Data:", data);
+            console.log("Devices & Interfaces:", sourceDevice, targetDevice, sourceInterface, targetInterface);
+    
+            // Extract source and target interface data from the response
+            const sourceData = data?.[sourceDevice]?.[sourceInterface];
+            const targetData = data?.[targetDevice]?.[targetInterface];
+    
+            if (sourceData || targetData) {
+                resultSpan.innerHTML = `
+                    ${sourceData ? `
+                        <strong>Source (${sourceDevice} - ${sourceInterface})</strong><br>
+                        IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br>
+                        OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max} <br><br>
+                    ` : ""}
+    
+                    ${targetData ? `
+                        <strong>Target (${targetDevice} - ${targetInterface})</strong><br>
+                        IN - Min: ${targetData.in.min} | Avg: ${targetData.in.avg} | Max: ${targetData.in.max} <br>
+                        OUT - Min: ${targetData.out.min} | Avg: ${targetData.out.avg} | Max: ${targetData.out.max}
+                    ` : ""}
+                `;
             } else {
-                resultSpan.innerHTML = "Data unavailable"
+                resultSpan.innerHTML = "Data unavailable";
             }
+    
         } catch (error) {
             resultSpan.innerHTML = "Error fetching data";
             console.error("Error fetching Min/Avg/Max data:", error);
@@ -220,7 +233,8 @@ function edgeClickHandler(event) {
             fetchButton.textContent = "Min/Avg/Max";
             fetchButton.disabled = false;
         }
-    }, { once: false }); // Keep fetching data on demand
+    }, { once: false });
+    
 }
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
