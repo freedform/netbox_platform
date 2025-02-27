@@ -158,7 +158,7 @@ function edgeClickHandler(event) {
             .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
         : '–';
 
-    const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata/?device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
+    const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
 
     // Create a button for Min/Avg/Max data fetching
     const minAvgMaxButton = `<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Fetch Data</button>`;
