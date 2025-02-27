@@ -93,6 +93,11 @@ services:
     volumes:
       - ./interface_utilization:/opt
     command: python /opt/main.py
+  interface_data:
+    image: python:3.12.8
+    volumes:
+      - ./interface_data:/opt
+    command: python /opt/main.py
 volumes:
   netbox-media-files:
     driver: local
