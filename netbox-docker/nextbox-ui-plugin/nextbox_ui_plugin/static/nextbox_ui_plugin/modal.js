@@ -205,6 +205,7 @@ function edgeClickHandler(event) {
             targetData = data.targetDevice?.targetInterface
             console.log(data)
             console.log(sourceDevice, targetDevice, sourceInterface, targetInterface)
+            console.log(sourceData, targetData)
             if (sourceData) {
                 resultSpan.innerHTML = `IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br> OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max}`
             } else if (targetData) {
