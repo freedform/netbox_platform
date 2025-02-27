@@ -160,9 +160,9 @@ function edgeClickHandler(event) {
 
     const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
 
-    // Create a button for Min/Avg/Max data fetching
+    // Button for fetching Min/Avg/Max
     const minAvgMaxButton = `<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Fetch Data</button>`;
-    
+
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
@@ -171,7 +171,7 @@ function edgeClickHandler(event) {
             ' | ' +
             (targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–')
         ],
-        ['Min/Avg/Max', minAvgMaxButton],
+        [minAvgMaxButton, ''], // Initially, only the Fetch Data button appears
     ];
 
     showModal(titleConfig, tableContent);
@@ -186,7 +186,20 @@ function edgeClickHandler(event) {
                     const response = await fetch(minAvgMaxURL);
                     const data = await response.json();
                     if (data) {
-                        fetchButton.outerHTML = `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`;
+                        const resultText = `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`;
+                        const toggleButton = `<button id="toggleMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>`;
+                        fetchButton.outerHTML = `${toggleButton} <span id="minAvgMaxResult" style="display: none;">${resultText}</span>`;
+
+                        // Add event listener for toggling result visibility
+                        setTimeout(() => {
+                            const toggleBtn = document.getElementById("toggleMinAvgMax");
+                            const resultSpan = document.getElementById("minAvgMaxResult");
+                            if (toggleBtn && resultSpan) {
+                                toggleBtn.addEventListener("click", () => {
+                                    resultSpan.style.display = resultSpan.style.display === "none" ? "inline" : "none";
+                                });
+                            }
+                        }, 0);
                     } else {
                         fetchButton.outerHTML = "Data unavailable";
                     }
@@ -198,8 +211,6 @@ function edgeClickHandler(event) {
         }
     }, 0);
 }
-
-
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
     event.preventDefault();
