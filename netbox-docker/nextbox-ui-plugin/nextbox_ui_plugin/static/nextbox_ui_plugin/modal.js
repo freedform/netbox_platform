@@ -167,12 +167,11 @@ function edgeClickHandler(event) {
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
-        ['Source Utilization', sourceBwURL !== '–'
-            ? `<a href="${sourceBwURL}" target="_blank">View Utilization</a>`
-            : '–'],
-        ['Target Utilization', targetBwURL !== '–'
-            ? `<a href="${targetBwURL}" target="_blank">View Utilization</a>`
-            : '–'],
+        ['Link Utilization',
+            (sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–') +
+            ' | ' +
+            (targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–')
+        ],
     ];
 
     showModal(titleConfig, tableContent);
