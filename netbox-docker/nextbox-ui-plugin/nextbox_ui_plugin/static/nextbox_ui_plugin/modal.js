@@ -146,64 +146,56 @@ function edgeClickHandler(event) {
         href: linkHref,
     };
 
-    const sourceBwURL = window.interfaceBwBaseURL
-        ? window.interfaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.source || 'unknown_device')
-            .replace("interface_name", edgeData?.sourceInterface || 'unknown_interface')
-        : '–';
+    const { source: sourceDevice, target: targetDevice } = edgeData?.customAttributes || {};
+    const { sourceInterface, targetInterface } = edgeData || {};
 
-    const targetBwURL = window.interfaceBwBaseURL
-        ? window.interfaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.target || 'unknown_device')
-            .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
-        : '–';
+    const generateBwURL = (device, iface) => 
+        window.interfaceBwBaseURL
+            ? window.interfaceBwBaseURL.replace("device_name", device || "unknown_device")
+                                       .replace("interface_name", iface || "unknown_interface")
+            : "–";
 
-    const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
+    const sourceBwURL = generateBwURL(sourceDevice, sourceInterface);
+    const targetBwURL = generateBwURL(targetDevice, targetInterface);
 
-    // Initially, the button is named "Min/Avg/Max"
+    const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice}&interface=${sourceInterface}`;
+
+    // Table Content: Button in first column, result in second column
     const tableContent = [
-        ['Source', edgeData?.customAttributes?.source || '–'],
-        ['Target', edgeData?.customAttributes?.target || '–'],
+        ['Source', sourceDevice || '–'],
+        ['Target', targetDevice || '–'],
         ['Link Utilization',
-            (sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–') +
-            ' | ' +
-            (targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–')
-        ],
-        ['<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>', '<span id="minAvgMaxResult"></span>'], // Button in first column, result in second
+            `${sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–'} | 
+             ${targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–'}`],
+        ['<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>', '<span id="minAvgMaxResult"></span>']
     ];
 
     showModal(titleConfig, tableContent);
 
-    // Add event listener to fetch Min/Avg/Max data
-    setTimeout(() => {
-        const fetchButton = document.getElementById("fetchMinAvgMax");
+    // Ensure event listener is attached only once
+    document.getElementById("fetchMinAvgMax")?.addEventListener("click", async function () {
+        const fetchButton = this; // Reference to the button
         const resultSpan = document.getElementById("minAvgMaxResult");
 
-        if (fetchButton && resultSpan) {
-            fetchButton.addEventListener("click", async () => {
-                fetchButton.disabled = true; // Prevent multiple clicks
-                fetchButton.textContent = "Loading...";
-                try {
-                    const response = await fetch(minAvgMaxURL);
-                    const data = await response.json();
-                    if (data) {
-                        resultSpan.innerHTML = `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`;
-                    } else {
-                        resultSpan.innerHTML = "Data unavailable";
-                    }
-                } catch (error) {
-                    resultSpan.innerHTML = "Error fetching data";
-                    console.error("Error fetching Min/Avg/Max data:", error);
-                } finally {
-                    fetchButton.textContent = "Min/Avg/Max"; // Restore button name
-                    fetchButton.disabled = false; // Re-enable button
-                }
-            });
+        fetchButton.disabled = true;
+        fetchButton.textContent = "Loading...";
+
+        try {
+            const response = await fetch(minAvgMaxURL);
+            const data = await response.json();
+
+            resultSpan.innerHTML = data 
+                ? `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`
+                : "Data unavailable";
+        } catch (error) {
+            resultSpan.innerHTML = "Error fetching data";
+            console.error("Error fetching Min/Avg/Max data:", error);
+        } finally {
+            fetchButton.textContent = "Min/Avg/Max";
+            fetchButton.disabled = false;
         }
-    }, 0);
+    }, { once: true }); // Ensure the listener runs only once per modal instance
 }
-
-
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
     event.preventDefault();
