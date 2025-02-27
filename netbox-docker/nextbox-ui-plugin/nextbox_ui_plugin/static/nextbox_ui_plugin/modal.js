@@ -173,10 +173,10 @@ function edgeClickHandler(event) {
             `<label for="periodSelect">Period:</label>
              <select id="periodSelect" style="margin-left: 5px;">
                 <option value="1h">1h</option>
+                <option value="3h">7h</option>
                 <option value="6h">6h</option>
                 <option value="12h">12h</option>
                 <option value="1d" selected>1d</option>
-                <option value="7d">7d</option>
              </select>
              <button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>`,
             '<span id="minAvgMaxResult"></span>'
