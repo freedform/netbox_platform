@@ -152,13 +152,27 @@ function edgeClickHandler(event) {
     const generateBwURL = (device, iface) => 
         window.interfaceBwBaseURL
             ? window.interfaceBwBaseURL.replace("device_name", device || "unknown_device")
-                                       .replace("interface_name", iface || "unknown_interface")
+                                      .replace("interface_name", iface || "unknown_interface")
             : "–";
 
     const sourceBwURL = generateBwURL(sourceDevice, sourceInterface);
     const targetBwURL = generateBwURL(targetDevice, targetInterface);
 
-    const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice}&interface=${sourceInterface}`;
+    const defaultPeriod = "1d"; // Default period selection
+    let selectedPeriod = defaultPeriod; // Store selected period
+
+    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice}&interface=${sourceInterface}`;
+
+    // Dropdown for period selection
+    const periodSelector = `
+        <select id="periodSelect" style="margin-right: 10px;">
+            <option value="1h">1h</option>
+            <option value="6h">6h</option>
+            <option value="12h">12h</option>
+            <option value="1d" selected>1d</option>
+            <option value="7d">7d</option>
+        </select>
+    `;
 
     // Table Content: Button in first column, result in second column
     const tableContent = [
@@ -167,21 +181,25 @@ function edgeClickHandler(event) {
         ['Link Utilization',
             `${sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–'} | 
              ${targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–'}`],
+        ['Period', periodSelector], // Period selection row
         ['<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>', '<span id="minAvgMaxResult"></span>']
     ];
 
     showModal(titleConfig, tableContent);
 
-    // Ensure event listener is attached only once
+    document.getElementById("periodSelect")?.addEventListener("change", (e) => {
+        selectedPeriod = e.target.value; // Update selected period
+    });
+
     document.getElementById("fetchMinAvgMax")?.addEventListener("click", async function () {
-        const fetchButton = this; // Reference to the button
+        const fetchButton = this;
         const resultSpan = document.getElementById("minAvgMaxResult");
 
         fetchButton.disabled = true;
         fetchButton.textContent = "Loading...";
 
         try {
-            const response = await fetch(minAvgMaxURL);
+            const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
             const data = await response.json();
 
             resultSpan.innerHTML = data 
@@ -194,8 +212,9 @@ function edgeClickHandler(event) {
             fetchButton.textContent = "Min/Avg/Max";
             fetchButton.disabled = false;
         }
-    }, { once: true }); // Ensure the listener runs only once per modal instance
+    }, { once: false }); // Keep fetching data on demand
 }
+
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
     event.preventDefault();
