@@ -14,7 +14,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             result = {
                 "min": "3 Gbit/s",
                 "max": "6 Gbit/s",
-                "avg": "4.5 Gbit/s",
+                "avg": "3.5 Gbit/s",
             }
 
             response_json = json.dumps(result)
