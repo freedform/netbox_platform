@@ -201,28 +201,36 @@ function edgeClickHandler(event) {
             const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
             const data = await response.json();
     
-            console.log("Fetched Data:", data);
-            console.log("Devices & Interfaces:", sourceDevice, targetDevice, sourceInterface, targetInterface);
+            const sourceData = data[sourceDevice]?.[sourceInterface];
+            const targetData = data[targetDevice]?.[targetInterface];
     
-            // Extract source and target interface data from the response
-            const sourceData = data?.[sourceDevice]?.[sourceInterface];
-            const targetData = data?.[targetDevice]?.[targetInterface];
-    
-            let displayData = "Data unavailable"; // Default message
+            let formattedOutput = "Data unavailable";
     
             if (sourceData) {
-                displayData = `
-                    IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br>
-                    OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max}
+                formattedOutput = `
+                    "IN": <br>
+                       Min: ${sourceData.in.min},<br>
+                       Avg: ${sourceData.in.avg},<br>
+                       Max: ${sourceData.in.max},<br>
+                    "OUT": <br>
+                       Min: ${sourceData.out.min},<br>
+                       Avg: ${sourceData.out.avg},<br>
+                       Max: ${sourceData.out.max}
                 `;
             } else if (targetData) {
-                displayData = `
-                    IN - Min: ${targetData.out.min} | Avg: ${targetData.out.avg} | Max: ${targetData.out.max} <br>
-                    OUT - Min: ${targetData.in.min} | Avg: ${targetData.in.avg} | Max: ${targetData.in.max}
+                formattedOutput = `
+                    "IN": <br>
+                       Min: ${targetData.out.min},<br>
+                       Avg: ${targetData.out.avg},<br>
+                       Max: ${targetData.out.max},<br>
+                    "OUT": <br>
+                       Min: ${targetData.in.min},<br>
+                       Avg: ${targetData.in.avg},<br>
+                       Max: ${targetData.in.max}
                 `;
             }
     
-            resultSpan.innerHTML = displayData;
+            resultSpan.innerHTML = formattedOutput;
     
         } catch (error) {
             resultSpan.innerHTML = "Error fetching data";
@@ -231,7 +239,8 @@ function edgeClickHandler(event) {
             fetchButton.textContent = "Min/Avg/Max";
             fetchButton.disabled = false;
         }
-    }, { once: false });
+    }, { once: false }); // Keep fetching data on demand
+    
     
     
 }
