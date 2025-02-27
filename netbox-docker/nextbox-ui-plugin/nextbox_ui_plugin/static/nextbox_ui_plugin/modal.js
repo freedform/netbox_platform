@@ -161,7 +161,7 @@ function edgeClickHandler(event) {
     const defaultPeriod = "1d"; // Default period selection
     let selectedPeriod = defaultPeriod; // Store selected period
 
-    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice}&interface=${sourceInterface}`;
+    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice},${targetDevice}&interface=${sourceInterface},${targetInterface}`;
 
     // Dropdown for period selection
     const periodSelector = `
@@ -200,10 +200,15 @@ function edgeClickHandler(event) {
         try {
             const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
             const data = await response.json();
-
-            resultSpan.innerHTML = data 
-                ? `Min: ${data.min} <br> Avg: ${data.avg} <br> Max: ${data.max}`
-                : "Data unavailable";
+            sourceData = data.sourceDevice?.sourceInterface
+            targetData = data.targetDevice?.targetInterface
+            if (sourceData) {
+                resultSpan.innerHTML = `IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br> OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max}`
+            } else if (targetData) {
+                resultSpan.innerHTML = `IN - Min: ${targetData.out.min} | Avg: ${targetData.out.avg} | Max: ${targetData.out.max} <br> OUT - Min: ${targetData.in.min} | Avg: ${targetData.in.avg} | Max: ${targetData.in.max}`
+            } else {
+                resultSpan.innerHTML = "Data unavailable"
+            }
         } catch (error) {
             resultSpan.innerHTML = "Error fetching data";
             console.error("Error fetching Min/Avg/Max data:", error);
@@ -213,8 +218,6 @@ function edgeClickHandler(event) {
         }
     }, { once: false }); // Keep fetching data on demand
 }
-
-
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
     event.preventDefault();

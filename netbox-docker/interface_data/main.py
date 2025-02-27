@@ -12,9 +12,19 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             result = {
-                "min": "3 Gbit/s",
-                "max": "6 Gbit/s",
-                "avg": "3.5 Gbit/s",
+                "core_sw_2": {
+                    "g0/2": {
+                        "in": { "min": "3 Gbit/s", "max": "6 Gbit/s", "avg": "3.5 Gbit/s",},
+                        "out": { "min": "4 Gbit/s", "max": "7 Gbit/s", "avg": "6 Gbit/s",}
+                    }
+                },
+                "dist_sw_1": {
+                    "g0/2": {
+                        "in": { "min": "4 Gbit/s", "max": "7 Gbit/s", "avg": "6 Gbit/s",},
+                        "out": { "min": "3 Gbit/s", "max": "6 Gbit/s", "avg": "3.5 Gbit/s",},
+                    }
+                }
+                
             }
 
             response_json = json.dumps(result)
