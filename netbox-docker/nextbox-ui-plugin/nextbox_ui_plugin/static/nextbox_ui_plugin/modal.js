@@ -130,94 +130,82 @@ function nodeClickHandler(event) {
 
 
 function edgeClickHandler(event) {
-    const { edgeId, edgeData, click } = event.detail;
+    const { edgeData, click } = event.detail;
     if (click.button !== 2) return;
 
-    let linkName = edgeData?.customAttributes?.name || 'Unknown';
-    let linkHref = decodeSanitizedString(edgeData?.customAttributes?.dcimCableURL || '');
+    const { customAttributes = {} } = edgeData || {};
+    const { name = "Unknown", dcimCableURL = "", source = "–", target = "–" } = customAttributes;
+    const { sourceInterface = "unknown_interface", targetInterface = "unknown_interface" } = edgeData;
 
-    if (edgeData.isBundled) {
-        linkName = 'LAG';
-        linkHref = '';
-    }
+    const getBwURL = (device, iface) =>
+        window.interfaceBwBaseURL
+            ? window.interfaceBwBaseURL.replace("device_name", device).replace("interface_name", iface)
+            : "–";
 
     const titleConfig = {
-        text: linkName,
-        href: linkHref,
+        text: edgeData.isBundled ? "LAG" : name,
+        href: edgeData.isBundled ? "" : decodeSanitizedString(dcimCableURL)
     };
 
-    const sourceBwURL = window.interfaceBwBaseURL
-        ? window.interfaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.source || 'unknown_device')
-            .replace("interface_name", edgeData?.sourceInterface || 'unknown_interface')
-        : '–';
-
-    const targetBwURL = window.interfaceBwBaseURL
-        ? window.interfaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.target || 'unknown_device')
-            .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
-        : '–';
-
-    // Default period is 1d
-    const defaultPeriod = "1d";
+    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${source}&interface=${sourceInterface}`;
+    let selectedPeriod = "1d"; // Default period
 
     const tableContent = [
-        ['Source', edgeData?.customAttributes?.source || '–'],
-        ['Target', edgeData?.customAttributes?.target || '–'],
-        ['Link Utilization',
-            (sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–') +
-            ' | ' +
-            (targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–')
+        ["Source", source],
+        ["Target", target],
+        [
+            "Link Utilization",
+            `${getBwURL(source, sourceInterface) !== "–" ? `<a href="${getBwURL(source, sourceInterface)}" target="_blank">Source</a>` : "–"} | 
+             ${getBwURL(target, targetInterface) !== "–" ? `<a href="${getBwURL(target, targetInterface)}" target="_blank">Target</a>` : "–"}`
         ],
         [
             `<label for="periodSelect">Period:</label>
              <select id="periodSelect" style="margin-left: 5px;">
                 <option value="1h">1h</option>
-                <option value="3h">7h</option>
                 <option value="6h">6h</option>
                 <option value="12h">12h</option>
                 <option value="1d" selected>1d</option>
-             </select>
-             <button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>`,
-            '<span id="minAvgMaxResult"></span>'
-        ],
+                <option value="7d">7d</option>
+             </select>`,
+            `<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>
+             <span id="minAvgMaxResult"></span>`
+        ]
     ];
 
     showModal(titleConfig, tableContent);
 
-    // Add event listener to fetch Min/Avg/Max data
     setTimeout(() => {
         const fetchButton = document.getElementById("fetchMinAvgMax");
         const resultSpan = document.getElementById("minAvgMaxResult");
         const periodSelect = document.getElementById("periodSelect");
 
-        if (fetchButton && resultSpan && periodSelect) {
-            fetchButton.addEventListener("click", async () => {
-                const selectedPeriod = periodSelect.value; // Get selected period
-                const minAvgMaxURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}&period=${selectedPeriod}`;
+        if (!fetchButton || !resultSpan || !periodSelect) return;
 
-                fetchButton.disabled = true; // Prevent multiple clicks
-                fetchButton.textContent = "Loading...";
+        periodSelect.addEventListener("change", (e) => selectedPeriod = e.target.value);
 
-                try {
-                    const response = await fetch(minAvgMaxURL);
-                    const data = await response.json();
-                    if (data) {
-                        resultSpan.innerHTML = `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`;
-                    } else {
-                        resultSpan.innerHTML = "Data unavailable";
-                    }
-                } catch (error) {
-                    resultSpan.innerHTML = "Error fetching data";
-                    console.error("Error fetching Min/Avg/Max data:", error);
-                } finally {
-                    fetchButton.textContent = "Min/Avg/Max"; // Restore button name
-                    fetchButton.disabled = false; // Re-enable button
-                }
-            });
-        }
+        fetchButton.addEventListener("click", async () => {
+            fetchButton.disabled = true;
+            fetchButton.textContent = "Loading...";
+
+            try {
+                const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
+                const data = await response.json();
+
+                resultSpan.innerHTML = data?.min !== undefined
+                    ? `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`
+                    : "Data unavailable";
+
+            } catch (error) {
+                resultSpan.innerHTML = "Error fetching data";
+                console.error("Error fetching Min/Avg/Max data:", error);
+            } finally {
+                fetchButton.textContent = "Min/Avg/Max";
+                fetchButton.disabled = false;
+            }
+        });
     }, 0);
 }
+
 
 
 
