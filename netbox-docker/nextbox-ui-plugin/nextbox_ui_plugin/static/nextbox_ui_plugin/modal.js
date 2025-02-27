@@ -131,7 +131,6 @@ function nodeClickHandler(event) {
 
 function edgeClickHandler(event) {
     const { edgeId, edgeData, click } = event.detail;
-    // Render Edge modal window on right mouse button click only
     if (click.button !== 2) return;
 
     let linkName = edgeData?.customAttributes?.name || 'Unknown';
@@ -147,11 +146,6 @@ function edgeClickHandler(event) {
         href: linkHref,
     };
 
-    // Ensure global variable name is correct (`interfaceBwBaseURL` instead of `intefaceBwBaseURL`)
-    if (typeof window.interfaceBwBaseURL === 'undefined') {
-        console.error("window.interfaceBwBaseURL is not defined!");
-    }
-
     const sourceBwURL = window.interfaceBwBaseURL
         ? window.interfaceBwBaseURL
             .replace("device_name", edgeData?.customAttributes?.source || 'unknown_device')
@@ -164,6 +158,11 @@ function edgeClickHandler(event) {
             .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
         : '–';
 
+    const minAvgMaxURL = `http://link.detail.local/?device=${edgeData?.customAttributes?.source}&interface=${edgeData?.sourceInterface}`;
+
+    // Create a button for Min/Avg/Max data fetching
+    const minAvgMaxButton = `<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Fetch Data</button>`;
+    
     const tableContent = [
         ['Source', edgeData?.customAttributes?.source || '–'],
         ['Target', edgeData?.customAttributes?.target || '–'],
@@ -172,10 +171,35 @@ function edgeClickHandler(event) {
             ' | ' +
             (targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–')
         ],
+        ['Min/Avg/Max', minAvgMaxButton],
     ];
 
     showModal(titleConfig, tableContent);
+
+    // Add event listener to fetch Min/Avg/Max data
+    setTimeout(() => {
+        const fetchButton = document.getElementById("fetchMinAvgMax");
+        if (fetchButton) {
+            fetchButton.addEventListener("click", async () => {
+                fetchButton.textContent = "Loading...";
+                try {
+                    const response = await fetch(minAvgMaxURL);
+                    const data = await response.json();
+                    const interfaceName = edgeData?.sourceInterface || 'unknown_interface';
+                    if (data[interfaceName]) {
+                        fetchButton.outerHTML = `Min: ${data[interfaceName].min} | Avg: ${data[interfaceName].avg} | Max: ${data[interfaceName].max}`;
+                    } else {
+                        fetchButton.outerHTML = "Data unavailable";
+                    }
+                } catch (error) {
+                    fetchButton.outerHTML = "Error fetching data";
+                    console.error("Error fetching Min/Avg/Max data:", error);
+                }
+            });
+        }
+    }, 0);
 }
+
 
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
