@@ -174,7 +174,7 @@ function edgeClickHandler(event) {
         </select>
     `;
 
-    // Table Content: Button in first column, result in second column
+    // Table Content: Button first, then period dropdown, then result
     const tableContent = [
         ['Source', sourceDevice || '–'],
         ['Target', targetDevice || '–'],
@@ -202,7 +202,7 @@ function edgeClickHandler(event) {
             const data = await response.json();
 
             resultSpan.innerHTML = data 
-                ? `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`
+                ? `Min: ${data.min} <br> Avg: ${data.avg} <br> Max: ${data.max}`
                 : "Data unavailable";
         } catch (error) {
             resultSpan.innerHTML = "Error fetching data";
@@ -213,6 +213,7 @@ function edgeClickHandler(event) {
         }
     }, { once: false }); // Keep fetching data on demand
 }
+
 
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
