@@ -158,43 +158,41 @@ function edgeClickHandler(event) {
     const sourceBwURL = generateBwURL(sourceDevice, sourceInterface);
     const targetBwURL = generateBwURL(targetDevice, targetInterface);
 
-    const defaultPeriod = "1d"; // Default period selection
-    let selectedPeriod = defaultPeriod; // Store selected period
+    let selectedPeriod = "1d"; // Default period
 
     const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice}&interface=${sourceInterface}`;
 
-    // Dropdown for period selection
-    const periodSelector = `
-        <select id="periodSelect" style="margin-right: 10px;">
-            <option value="1h">1h</option>
-            <option value="3h">3h</option>
-            <option value="6h">6h</option>
-            <option value="12h">12h</option>
-            <option value="1d" selected>1d</option>
-        </select>
-    `;
-
-    // Table Content: Button in first column, result in second column
+    // Table Content: Period selection and button in the same row
     const tableContent = [
         ['Source', sourceDevice || '–'],
         ['Target', targetDevice || '–'],
         ['Link Utilization',
             `${sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–'} | 
              ${targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–'}`],
-        ['Period', periodSelector], // Period selection row
-        ['<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>', '<span id="minAvgMaxResult"></span>']
+        [
+            `<select id="periodSelect" style="margin-right: 10px;">
+                <option value="1h">1h</option>
+                <option value="3h">3h</option>
+                <option value="6h">6h</option>
+                <option value="12h">12h</option>
+                <option value="1d" selected>1d</option>
+            </select>
+            <button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>`,
+            '<span id="minAvgMaxResult"></span>'
+        ]
     ];
 
     showModal(titleConfig, tableContent);
 
-    document.getElementById("periodSelect")?.addEventListener("change", (e) => {
-        selectedPeriod = e.target.value; // Update selected period
+    const periodSelect = document.getElementById("periodSelect");
+    const fetchButton = document.getElementById("fetchMinAvgMax");
+    const resultSpan = document.getElementById("minAvgMaxResult");
+
+    periodSelect?.addEventListener("change", (e) => {
+        selectedPeriod = e.target.value;
     });
 
-    document.getElementById("fetchMinAvgMax")?.addEventListener("click", async function () {
-        const fetchButton = this;
-        const resultSpan = document.getElementById("minAvgMaxResult");
-
+    fetchButton?.addEventListener("click", async function () {
         fetchButton.disabled = true;
         fetchButton.textContent = "Loading...";
 
@@ -212,8 +210,9 @@ function edgeClickHandler(event) {
             fetchButton.textContent = "Min/Avg/Max";
             fetchButton.disabled = false;
         }
-    }, { once: false }); // Keep fetching data on demand
+    });
 }
+
 
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
