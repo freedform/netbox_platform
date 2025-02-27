@@ -200,8 +200,11 @@ function edgeClickHandler(event) {
         try {
             const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
             const data = await response.json();
+            
             sourceData = data.sourceDevice?.sourceInterface
             targetData = data.targetDevice?.targetInterface
+            console.log(data)
+            console.log(sourceDevice, targetDevice, sourceInterface, targetInterface)
             if (sourceData) {
                 resultSpan.innerHTML = `IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br> OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max}`
             } else if (targetData) {
