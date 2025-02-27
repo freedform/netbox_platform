@@ -167,10 +167,10 @@ function edgeClickHandler(event) {
     const periodSelector = `
         <select id="periodSelect" style="margin-right: 10px;">
             <option value="1h">1h</option>
+            <option value="3h">3h</option>
             <option value="6h">6h</option>
             <option value="12h">12h</option>
             <option value="1d" selected>1d</option>
-            <option value="7d">7d</option>
         </select>
     `;
 
