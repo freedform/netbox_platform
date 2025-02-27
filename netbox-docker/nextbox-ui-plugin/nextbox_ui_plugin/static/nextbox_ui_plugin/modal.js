@@ -208,23 +208,21 @@ function edgeClickHandler(event) {
             const sourceData = data?.[sourceDevice]?.[sourceInterface];
             const targetData = data?.[targetDevice]?.[targetInterface];
     
-            if (sourceData || targetData) {
-                resultSpan.innerHTML = `
-                    ${sourceData ? `
-                        <strong>Source (${sourceDevice} - ${sourceInterface})</strong><br>
-                        IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br>
-                        OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max} <br><br>
-                    ` : ""}
+            let displayData = "Data unavailable"; // Default message
     
-                    ${targetData ? `
-                        <strong>Target (${targetDevice} - ${targetInterface})</strong><br>
-                        IN - Min: ${targetData.in.min} | Avg: ${targetData.in.avg} | Max: ${targetData.in.max} <br>
-                        OUT - Min: ${targetData.out.min} | Avg: ${targetData.out.avg} | Max: ${targetData.out.max}
-                    ` : ""}
+            if (sourceData) {
+                displayData = `
+                    IN - Min: ${sourceData.in.min} | Avg: ${sourceData.in.avg} | Max: ${sourceData.in.max} <br>
+                    OUT - Min: ${sourceData.out.min} | Avg: ${sourceData.out.avg} | Max: ${sourceData.out.max}
                 `;
-            } else {
-                resultSpan.innerHTML = "Data unavailable";
+            } else if (targetData) {
+                displayData = `
+                    IN - Min: ${targetData.out.min} | Avg: ${targetData.out.avg} | Max: ${targetData.out.max} <br>
+                    OUT - Min: ${targetData.in.min} | Avg: ${targetData.in.avg} | Max: ${targetData.in.max}
+                `;
             }
+    
+            resultSpan.innerHTML = displayData;
     
         } catch (error) {
             resultSpan.innerHTML = "Error fetching data";
@@ -234,6 +232,7 @@ function edgeClickHandler(event) {
             fetchButton.disabled = false;
         }
     }, { once: false });
+    
     
 }
 
