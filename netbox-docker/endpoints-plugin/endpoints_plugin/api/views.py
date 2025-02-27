@@ -4,11 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from dcim.models import Device  # Import NetBox's Device model
 from django.conf import settings
+from urllib.parse import urlencode
 
 
 class GetEndpointData(APIView):
     """
-    API endpoint to fetch device status from multiple external APIs with optional filters.
+    API endpoint to fetch data from multiple external APIs, passing all query parameters dynamically.
     """
 
     permission_classes = [DjangoObjectPermissions]  # Enforce NetBox object permissions
@@ -24,27 +25,28 @@ class GetEndpointData(APIView):
         if not request.user.has_perm("dcim.view_device"):
             return Response({"error": "Permission denied"}, status=403)
 
-        # Get the requested endpoint and filter
+        # Get the requested endpoint
         endpoint_key = request.query_params.get("endpoint", "").strip()
-        device_filter = request.query_params.get("filter", "").strip()
-
-        # Get the external URLs from the plugin settings
-        available_endpoints = settings.PLUGINS_CONFIG.get("endpoints_plugin", {})
-
         if not endpoint_key:
             return Response(
-                {"error": "Missing 'endpoint' parameter. Available options: " + ", ".join(available_endpoints.keys())},
+                {"error": "Missing 'endpoint' parameter. Available options: " + ", ".join(settings.PLUGINS_CONFIG.get("endpoints_plugin", {}).keys())},
                 status=400,
             )
 
-        # Retrieve the selected external API URL
+        # Get the external URLs from the plugin settings
+        available_endpoints = settings.PLUGINS_CONFIG.get("endpoints_plugin", {})
         external_api_url = available_endpoints.get(endpoint_key, "").rstrip("/")
 
         if not external_api_url:
             return Response({"error": f"Invalid endpoint '{endpoint_key}'"}, status=400)
 
-        # Construct the full API URL
-        full_url = f"{external_api_url}/?filter={device_filter}" if device_filter else external_api_url
+        # Extract all query parameters except 'endpoint'
+        query_params = request.query_params.copy()
+        query_params.pop("endpoint", None)  # Remove 'endpoint' key if present
+        query_string = urlencode(query_params, doseq=True)
+
+        # Construct the full API URL with all remaining query parameters
+        full_url = f"{external_api_url}/?{query_string}" if query_string else external_api_url
 
         try:
             # Fetch JSON from the selected external API
