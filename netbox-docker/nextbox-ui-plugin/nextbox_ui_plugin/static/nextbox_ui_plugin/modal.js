@@ -130,83 +130,90 @@ function nodeClickHandler(event) {
 
 
 function edgeClickHandler(event) {
-    const { edgeData, click } = event.detail;
+    const { edgeId, edgeData, click } = event.detail;
     if (click.button !== 2) return;
 
-    const { customAttributes = {} } = edgeData || {};
-    const { name = "Unknown", dcimCableURL = "", source = "–", target = "–" } = customAttributes;
-    const { sourceInterface = "unknown_interface", targetInterface = "unknown_interface" } = edgeData;
+    let linkName = edgeData?.customAttributes?.name || 'Unknown';
+    let linkHref = decodeSanitizedString(edgeData?.customAttributes?.dcimCableURL || '');
 
-    const getBwURL = (device, iface) =>
-        window.interfaceBwBaseURL
-            ? window.interfaceBwBaseURL.replace("device_name", device).replace("interface_name", iface)
-            : "–";
+    if (edgeData.isBundled) {
+        linkName = 'LAG';
+        linkHref = '';
+    }
 
     const titleConfig = {
-        text: edgeData.isBundled ? "LAG" : name,
-        href: edgeData.isBundled ? "" : decodeSanitizedString(dcimCableURL)
+        text: linkName,
+        href: linkHref,
     };
 
-    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${source}&interface=${sourceInterface}`;
-    let selectedPeriod = "1d"; // Default period
+    const { source: sourceDevice, target: targetDevice } = edgeData?.customAttributes || {};
+    const { sourceInterface, targetInterface } = edgeData || {};
 
+    const generateBwURL = (device, iface) => 
+        window.interfaceBwBaseURL
+            ? window.interfaceBwBaseURL.replace("device_name", device || "unknown_device")
+                                      .replace("interface_name", iface || "unknown_interface")
+            : "–";
+
+    const sourceBwURL = generateBwURL(sourceDevice, sourceInterface);
+    const targetBwURL = generateBwURL(targetDevice, targetInterface);
+
+    const defaultPeriod = "1d"; // Default period selection
+    let selectedPeriod = defaultPeriod; // Store selected period
+
+    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice}&interface=${sourceInterface}`;
+
+    // Dropdown for period selection
+    const periodSelector = `
+        <select id="periodSelect" style="margin-right: 10px;">
+            <option value="1h">1h</option>
+            <option value="3h">3h</option>
+            <option value="6h">6h</option>
+            <option value="12h">12h</option>
+            <option value="1d" selected>1d</option>
+        </select>
+    `;
+
+    // Table Content: Button in first column, result in second column
     const tableContent = [
-        ["Source", source],
-        ["Target", target],
-        [
-            "Link Utilization",
-            `${getBwURL(source, sourceInterface) !== "–" ? `<a href="${getBwURL(source, sourceInterface)}" target="_blank">Source</a>` : "–"} | 
-             ${getBwURL(target, targetInterface) !== "–" ? `<a href="${getBwURL(target, targetInterface)}" target="_blank">Target</a>` : "–"}`
-        ],
-        [
-            `<label for="periodSelect">Period:</label>
-             <select id="periodSelect" style="margin-left: 5px;">
-                <option value="1h">1h</option>
-                <option value="6h">6h</option>
-                <option value="12h">12h</option>
-                <option value="1d" selected>1d</option>
-                <option value="7d">7d</option>
-             </select>`,
-            `<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>
-             <span id="minAvgMaxResult"></span>`
-        ]
+        ['Source', sourceDevice || '–'],
+        ['Target', targetDevice || '–'],
+        ['Link Utilization',
+            `${sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–'} | 
+             ${targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–'}`],
+        ['Period', periodSelector], // Period selection row
+        ['<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>', '<span id="minAvgMaxResult"></span>']
     ];
 
     showModal(titleConfig, tableContent);
 
-    setTimeout(() => {
-        const fetchButton = document.getElementById("fetchMinAvgMax");
+    document.getElementById("periodSelect")?.addEventListener("change", (e) => {
+        selectedPeriod = e.target.value; // Update selected period
+    });
+
+    document.getElementById("fetchMinAvgMax")?.addEventListener("click", async function () {
+        const fetchButton = this;
         const resultSpan = document.getElementById("minAvgMaxResult");
-        const periodSelect = document.getElementById("periodSelect");
 
-        if (!fetchButton || !resultSpan || !periodSelect) return;
+        fetchButton.disabled = true;
+        fetchButton.textContent = "Loading...";
 
-        periodSelect.addEventListener("change", (e) => selectedPeriod = e.target.value);
+        try {
+            const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
+            const data = await response.json();
 
-        fetchButton.addEventListener("click", async () => {
-            fetchButton.disabled = true;
-            fetchButton.textContent = "Loading...";
-
-            try {
-                const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
-                const data = await response.json();
-
-                resultSpan.innerHTML = data?.min !== undefined
-                    ? `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`
-                    : "Data unavailable";
-
-            } catch (error) {
-                resultSpan.innerHTML = "Error fetching data";
-                console.error("Error fetching Min/Avg/Max data:", error);
-            } finally {
-                fetchButton.textContent = "Min/Avg/Max";
-                fetchButton.disabled = false;
-            }
-        });
-    }, 0);
+            resultSpan.innerHTML = data 
+                ? `Min: ${data.min} | Avg: ${data.avg} | Max: ${data.max}`
+                : "Data unavailable";
+        } catch (error) {
+            resultSpan.innerHTML = "Error fetching data";
+            console.error("Error fetching Min/Avg/Max data:", error);
+        } finally {
+            fetchButton.textContent = "Min/Avg/Max";
+            fetchButton.disabled = false;
+        }
+    }, { once: false }); // Keep fetching data on demand
 }
-
-
 
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
