@@ -11,34 +11,20 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
-            query_components = parse_qs(urlparse(self.path).query)
-            device_filter = query_components.get("device", [])
-
-            # Health check endpoint
-            if self.path == "/health":
-                self.send_response(200)
-                self.end_headers()
-                self.wfile.write(b"OK")
-                return
-
             result = {
-                "core_sw_1": {
-                    "g0/3": {
-                        "in": "3.5 Mbit/s",
-                        "out": "19.5 Mbit/s",
-                    },
-                },
-                "edge_ro_1": {
-                    "g0/1": {
-                        "in": "1.2 Gbit/s",
-                        "out": "2.2 Gbit/s",
+                "core_sw_2": {
+                    "g0/2": {
+                        "in": { "min": "3 Gbit/s", "max": "6 Gbit/s", "avg": "3.5 Gbit/s",},
+                        "out": { "min": "4 Gbit/s", "max": "7 Gbit/s", "avg": "6 Gbit/s",}
                     }
                 },
+                "dist_sw_1": {
+                    "g0/2": {
+                        "in": { "min": "4 Gbit/s", "max": "7 Gbit/s", "avg": "6 Gbit/s",},
+                        "out": { "min": "3 Gbit/s", "max": "6 Gbit/s", "avg": "3.5 Gbit/s",},
+                    }
+                }
             }
-
-            if device_filter:
-                device_filter = device_filter[0].split(",")
-                result = {k: v for k, v in result.items() if k in device_filter}
 
             response_json = json.dumps(result)
             self.send_response(200)
@@ -61,7 +47,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         return
 
 
-def run_server(host="0.0.0.0", port=7777):
+def run_server(host="0.0.0.0", port=6666):
     server = HTTPServer((host, port), WebRequestHandler)
     logging.info(f"Starting server on {host}:{port}")
     server.serve_forever()

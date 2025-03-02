@@ -131,7 +131,6 @@ function nodeClickHandler(event) {
 
 function edgeClickHandler(event) {
     const { edgeId, edgeData, click } = event.detail;
-    // Render Edge modal window on right mouse button click only
     if (click.button !== 2) return;
 
     let linkName = edgeData?.customAttributes?.name || 'Unknown';
@@ -147,37 +146,104 @@ function edgeClickHandler(event) {
         href: linkHref,
     };
 
-    // Ensure global variable name is correct (`interfaceBwBaseURL` instead of `intefaceBwBaseURL`)
-    if (typeof window.interfaceBwBaseURL === 'undefined') {
-        console.error("window.interfaceBwBaseURL is not defined!");
-    }
+    const { source: sourceDevice, target: targetDevice } = edgeData?.customAttributes || {};
+    const { sourceInterface, targetInterface } = edgeData || {};
 
-    const sourceBwURL = window.interfaceBwBaseURL
-        ? window.interfaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.source || 'unknown_device')
-            .replace("interface_name", edgeData?.sourceInterface || 'unknown_interface')
-        : '–';
+    const generateBwURL = (device, iface) => 
+        window.interfaceBwBaseURL
+            ? window.interfaceBwBaseURL.replace("device_name", device || "unknown_device")
+                                      .replace("interface_name", iface || "unknown_interface")
+            : "–";
 
-    const targetBwURL = window.interfaceBwBaseURL
-        ? window.interfaceBwBaseURL
-            .replace("device_name", edgeData?.customAttributes?.target || 'unknown_device')
-            .replace("interface_name", edgeData?.targetInterface || 'unknown_interface')
-        : '–';
+    const sourceBwURL = generateBwURL(sourceDevice, sourceInterface);
+    const targetBwURL = generateBwURL(targetDevice, targetInterface);
 
+    const defaultPeriod = "1d"; // Default period selection
+    let selectedPeriod = defaultPeriod; // Store selected period
+
+    const minAvgMaxBaseURL = `${window.nbEnpointsURL}/?endpoint=ifdata&device=${sourceDevice},${targetDevice}&interface=${sourceInterface},${targetInterface}`;
+
+    // Dropdown for period selection
+    const periodSelector = `
+        <select id="periodSelect" style="margin-left: 10px;">
+            <option value="1h">1h</option>
+            <option value="3h">3h</option>
+            <option value="6h">6h</option>
+            <option value="12h">12h</option>
+            <option value="1d" selected>1d</option>
+        </select>
+    `;
+
+    // Table Content: Button first, then period dropdown, then result
     const tableContent = [
-        ['Source', edgeData?.customAttributes?.source || '–'],
-        ['Target', edgeData?.customAttributes?.target || '–'],
-        ['Source Utilization', sourceBwURL !== '–'
-            ? `<a href="${sourceBwURL}" target="_blank">View Utilization</a>`
-            : '–'],
-        ['Target Utilization', targetBwURL !== '–'
-            ? `<a href="${targetBwURL}" target="_blank">View Utilization</a>`
-            : '–'],
+        ['Source', sourceDevice || '–'],
+        ['Target', targetDevice || '–'],
+        ['Link Utilization',
+            `${sourceBwURL !== '–' ? `<a href="${sourceBwURL}" target="_blank">Source</a>` : '–'} | 
+             ${targetBwURL !== '–' ? `<a href="${targetBwURL}" target="_blank">Target</a>` : '–'}`],
+        ['<button id="fetchMinAvgMax" style="padding: 5px 10px; cursor: pointer;">Min/Avg/Max</button>' + periodSelector, '<span id="minAvgMaxResult"></span>']
     ];
 
     showModal(titleConfig, tableContent);
-}
 
+    document.getElementById("periodSelect")?.addEventListener("change", (e) => {
+        selectedPeriod = e.target.value; // Update selected period
+    });
+
+    document.getElementById("fetchMinAvgMax")?.addEventListener("click", async function () {
+        const fetchButton = this;
+        const resultSpan = document.getElementById("minAvgMaxResult");
+    
+        fetchButton.disabled = true;
+        fetchButton.textContent = "Loading...";
+    
+        try {
+            const response = await fetch(`${minAvgMaxBaseURL}&period=${selectedPeriod}`);
+            const data = await response.json();
+    
+            const sourceData = data[sourceDevice]?.[sourceInterface];
+            const targetData = data[targetDevice]?.[targetInterface];
+    
+            let formattedOutput = "Data unavailable";
+    
+            if (sourceData) {
+                formattedOutput = `
+                    "IN": <br>
+                       Min: ${sourceData.in.min},<br>
+                       Avg: ${sourceData.in.avg},<br>
+                       Max: ${sourceData.in.max},<br>
+                    "OUT": <br>
+                       Min: ${sourceData.out.min},<br>
+                       Avg: ${sourceData.out.avg},<br>
+                       Max: ${sourceData.out.max}
+                `;
+            } else if (targetData) {
+                formattedOutput = `
+                    "IN": <br>
+                       Min: ${targetData.out.min},<br>
+                       Avg: ${targetData.out.avg},<br>
+                       Max: ${targetData.out.max},<br>
+                    "OUT": <br>
+                       Min: ${targetData.in.min},<br>
+                       Avg: ${targetData.in.avg},<br>
+                       Max: ${targetData.in.max}
+                `;
+            }
+    
+            resultSpan.innerHTML = formattedOutput;
+    
+        } catch (error) {
+            resultSpan.innerHTML = "Error fetching data";
+            console.error("Error fetching Min/Avg/Max data:", error);
+        } finally {
+            fetchButton.textContent = "Min/Avg/Max";
+            fetchButton.disabled = false;
+        }
+    }, { once: false }); // Keep fetching data on demand
+    
+    
+    
+}
 
 window.addEventListener('topoSphere.nodeClicked', (event) => {
     event.preventDefault();

@@ -12,7 +12,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             query_components = parse_qs(urlparse(self.path).query)
-            device_filter = query_components.get("filter", [])
+            device_filter = query_components.get("device", [])
 
             # Health check endpoint
             if self.path == "/health":

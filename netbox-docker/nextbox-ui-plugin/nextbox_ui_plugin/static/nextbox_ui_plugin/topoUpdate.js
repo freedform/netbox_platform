@@ -45,11 +45,11 @@ class NodeStatusPoller {
     async fetchNodesData(topologyNodes) {
         try {
             let result = {};
-            const filterValue = Array.from(topologyNodes.keys()).join(",");
+            const nodesFilter = Array.from(topologyNodes.keys()).join(",");
     
             const endpoints = {
-                alertsData: `${this.nbEnpointsURL}/?endpoint=alerts&filter=${filterValue}`,
-                bwData: `${this.nbEnpointsURL}/?endpoint=bw&filter=${filterValue}`,
+                alertsData: `${this.nbEnpointsURL}/?endpoint=alerts&device=${nodesFilter}`,
+                bwData: `${this.nbEnpointsURL}/?endpoint=bw&device=${nodesFilter}`,
             };
     
             // Fetch all endpoints in parallel and process responses together
